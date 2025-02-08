@@ -4,7 +4,7 @@ import MobileDetect from "mobile-detect";
 
 // Constants
 const isProduction = process.env.NODE_ENV === "production";
-const port = process.env.PORT || 1999;
+const port = process.env.PORT || 2026;
 const base = process.env.BASE || "/";
 
 // Cached production assets

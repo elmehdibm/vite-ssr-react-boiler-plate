@@ -8,14 +8,198 @@ html {
   overflow: hidden;
   transition: background-color 0.3s, color 0.3s;
 }
+
 body {
   background: linear-gradient(45deg, #c9d6ff, #e2e2e2);
   color: #333;
 }
+
 body.dark-mode {
   background: linear-gradient(45deg, #2c3e50, #34495e);
   color: #f0f0f0;
 }
+
 .container {
   display: block;
+}
+
+/* Train Piano */
+
+.overlay {
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 30vh;
+  z-index: 100;
+}
+
+.text {
+  font-family: "Yanone Kaffeesatz";
+  font-size: 100px;
+  display: flex;
+  position: absolute;
+  bottom: 5vh;
+  left: 50%;
+  transform: translateX(-50%);
+  user-select: none;
+}
+
+.text .wrapper {
+  padding-left: 20px;
+  padding-right: 20px;
+  padding-top: 20px;
+}
+
+.text .wrapper .letter {
+  transition: ease-out 1s;
+  transform: translateY(40%);
+}
+
+.text .wrapper .shadow {
+  transform: scale(1, -1);
+  color: #999;
+  transition: ease-in 5s, ease-out 5s;
+}
+
+.text .wrapper:hover .letter {
+  transform: translateY(-200%);
+}
+
+.text .wrapper:hover .shadow {
+  opacity: 0;
+  transform: translateY(200%);
+}
+
+.title-container {
+  position: relative;
+  z-index: 100;
+}
+
+.actions-container {
+  display: flex;
+  /* justify-content: space-between; */
+}
+
+.select-container {
+  width: 250px;
+  position: relative;
+  z-index: 100;
+}
+
+.buttons-container {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  position: relative;
+  z-index: 100;
+}
+
+.paper-piano {
+  text-align: center;
+  height: 150vh;
+  padding: 12px;
+  background: linear-gradient(0deg, #fddb92, #d1fdff);
+}
+
+.falling-notes-board {
+  display: flex;
+  text-align: left;
+  flex-direction: column-reverse;
+  position: relative;
+  z-index: 10;
+}
+
+.falling-white-line {
+  display: flex;
+}
+
+.falling-black-line {
+  display: flex;
+}
+
+.falling-white-note {
+  display: inline-block;
+  color: white;
+  text-align: center;
+  height: 112px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 27px;
+  box-sizing: border-box;
+}
+
+.keyboard {
+  display: flex;
+  height: 112px;
+  flex-direction: column;
+  align-items: center;
+}
+
+.keyboard-whites {
+  text-align: left;
+  height: 112px;
+  display: flex;
+  position: relative;
+  z-index: 11;
+}
+
+.keyboard-blackes {
+  text-align: left;
+  height: 57px;
+  position: relative;
+  z-index: 12;
+  bottom: 112px;
+  left: 13.5px;
+  display: flex;
+}
+
+.studio {
+  display: block;
+}
+
+.white-note {
+  background-color: white;
+  height: 110px;
+  width: 27px;
+  display: inline-block;
+  border: solid 1px black;
+  box-sizing: border-box;
+}
+
+.black-note {
+  background-color: black;
+  height: 110px;
+  width: 27px;
+  display: inline-block;
+  border: solid 1px white;
+  border-top-color: black;
+  box-sizing: border-box;
+}
+
+/* Styling texts everywhere */
+h1,
+h2 {
+  color: #007aff;
+  transition: color 0.3s;
+  margin: 0;
+}
+h1 {
+  font-size: 26px;
+}
+h2 {
+  font-size: 22px;
+}
+p {
+  margin: 5px 0 15px;
+  font-size: 16px;
+  color: #666;
+}
+.dark-mode h1,
+.dark-mode h2 {
+  color: #60a5fa;
+}
+
+.dark-mode p {
+  color: #cccccc;
 }
