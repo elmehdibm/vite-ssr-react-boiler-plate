@@ -22,6 +22,7 @@ import {
   Timeline,
   Favorite,
 } from "@mui/icons-material";
+import { useNavigate } from "react-router-dom";
 
 // contents.ts
 export const TUTORIAL_CONTENT = {
@@ -137,7 +138,7 @@ export const TUTORIAL_CONTENT = {
   finalSteps: {
     title: "Your Personalized Timeline",
     description:
-      "While everyone's path is different, here's how we'll create your journey:",
+      "While everyone's path is different, here's an example of how we'll create your journey custom for you:",
     steps: [
       {
         title: "Week 1: Your Foundation",
@@ -175,6 +176,7 @@ function TutorialPage({ isMobile }: { isMobile: boolean }) {
   const theme = useTheme();
   const maxSteps = 8;
   const [activeStep, setActiveStep] = useState(0);
+  const navigate = useNavigate();
 
   // Responsive typography styles organized in one constant.
   const typographyStyles = {
@@ -272,6 +274,9 @@ function TutorialPage({ isMobile }: { isMobile: boolean }) {
 
   const handleNext = () => {
     setActiveStep((prev) => Math.min(prev + 1, maxSteps - 1));
+    if (activeStep === maxSteps - 1) {
+      navigate("/home");
+    }
   };
 
   const handleBack = () => {

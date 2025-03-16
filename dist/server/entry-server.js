@@ -4,7 +4,7 @@ import { lazy, Suspense } from "react";
 import ReactDOMServer from "react-dom/server";
 import { StaticRouter } from "react-router-dom/server.mjs";
 const Router = lazy(
-  () => import("./assets/index-sCieo3WS.js").then((module) => ({ default: module.Router }))
+  () => import("./assets/index-5W4F_I42.js").then((module) => ({ default: module.Router }))
 );
 function render({ path, isMobile }) {
   console.log("path is", path);

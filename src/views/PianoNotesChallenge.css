@@ -101,7 +101,7 @@ button:hover {
 }
 
 .note-label {
-  position: absolute;
+  position: relative;
   bottom: 10px;
   left: 50%;
   transform: translateX(-50%);
@@ -115,4 +115,22 @@ button:hover {
 
 .key.black .note-label {
   color: white;
+}
+
+.ReactPiano__Key--active {
+  background: #1a5da6 !important; /* Change the default active key color to bright red */
+}
+
+.ReactPiano__Key--accidental {
+  background: #000; /* Change accidental keys to be completely black */
+  .MuiBox-root {
+    color: white;
+  }
+}
+
+.ReactPiano__NoteLabelContainer {
+  .MuiBox-root {
+    position: relative;
+    text-align: center;
+  }
 }

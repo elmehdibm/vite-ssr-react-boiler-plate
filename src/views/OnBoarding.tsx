@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   Box,
@@ -8,6 +8,8 @@ import {
   Stack,
   styled,
 } from "@mui/material";
+import Logo from "../assets/logo.png";
+import { useUser } from "../utils/UserProvider";
 
 const OnboardingContainer = styled(Box)(({ theme }) => ({
   display: "flex",
@@ -97,6 +99,7 @@ const journeyLevels = [
 ];
 
 export default function OnboardingPage() {
+  const { updateProfileName } = useUser();
   const [name, setName] = useState("");
   const [selectedLevel, setSelectedLevel] = useState("");
   const navigate = useNavigate();
@@ -108,26 +111,21 @@ export default function OnboardingPage() {
 
   const handleLevelSelect = (level: string) => {
     setSelectedLevel(level);
-    localStorage.setItem("userName", name);
+    updateProfileName(name);
     navigate(level === "New to piano" ? "/advice" : "/tutorial");
   };
 
   return (
     <OnboardingContainer>
-      <Typography
-        variant="h1"
-        component="h1"
+      <Box
+        component="img"
+        src={Logo}
+        alt="OnaiPiano Logo"
         sx={{
-          position: "relative",
-          fontFamily: "Monoton, cursive",
-          textAlign: "center",
+          width: { xs: "150px", sm: "200px", md: "250px" },
           marginBottom: 4,
-          color: "#1a5da6",
-          fontSize: { xs: "3rem", sm: "4rem", md: "5rem" },
         }}
-      >
-        OnaiPiano
-      </Typography>
+      />
 
       <StyledTextField
         label="What should we call you?"
@@ -192,7 +190,7 @@ export default function OnboardingPage() {
                 px: 1,
                 textTransform: "none",
                 fontSize: { xs: "1rem", sm: "1.2rem" },
-                fontStyle: "italic"
+                fontStyle: "italic",
               }}
             >
               {journey.description}

@@ -2,6 +2,8 @@ import { lazy, Suspense } from "react";
 import { Routes, Route } from "react-router-dom";
 import PianoNotesChallenge from "../views/PianoNotesChallenge";
 import { createTheme, ThemeProvider } from "@mui/material";
+import HomeSpace from "../views/HomeSpace";
+import { UserProvider } from "../utils/UserProvider";
 
 const Home = lazy(() => import("../views/Home"));
 const TrainPiano = lazy(() => import("../views/TrainPiano"));
@@ -28,8 +30,10 @@ export const Router = ({ isMobile }: any) => {
   if (isMobile) {
     return (
       <Suspense fallback={<div>Loading...</div>}>
-        <Routes>
-          {/* <Route path="/" element={<Home />} />
+        <ThemeProvider theme={theme}>
+          <UserProvider>
+            <Routes>
+              {/* <Route path="/" element={<Home />} />
           <Route
             path="/trainpiano"
             element={
@@ -37,10 +41,14 @@ export const Router = ({ isMobile }: any) => {
             }
           />
           <Route path="/dailychallenge" element={<PianoNotesChallenge />} /> */}
-          <Route path="/" element={<OnboardingPage />} />
-          <Route path="/advice" element={<AdvicePage isMobile />} />
-          <Route path="/tutorial" element={<TutorialPage isMobile />} />
-        </Routes>
+              <Route path="/" element={<OnboardingPage />} />
+              <Route path="/home" element={<HomeSpace />} />
+              <Route path="/advice" element={<AdvicePage isMobile />} />
+              <Route path="/tutorial" element={<TutorialPage isMobile />} />
+              <Route path="/dailychallenge" element={<PianoNotesChallenge />} />
+            </Routes>
+          </UserProvider>
+        </ThemeProvider>
       </Suspense>
     );
   }
@@ -48,16 +56,22 @@ export const Router = ({ isMobile }: any) => {
   return (
     <Suspense fallback={<div>Loading...</div>}>
       <ThemeProvider theme={theme}>
-        <Routes>
-          {/* <Route path="/" element={<Home />} />
+        <UserProvider>
+          <Routes>
+            {/* <Route path="/" element={<Home />} />
         <Route path="/trainpiano" element={<TrainPiano />} />
         <Route path="/dailychallenge" element={<PianoNotesChallenge />} /> */}
-          <Route path="/" element={<OnboardingPage />} />
-          <Route path="/advice" element={<AdvicePage isMobile={false} />} />
-          <Route path="/tutorial" element={<TutorialPage isMobile={false} />} />
-          <Route path="/trainpiano" element={<TrainPiano />} />
-          <Route path="/dailychallenge" element={<PianoNotesChallenge />} />
-        </Routes>
+            <Route path="/" element={<OnboardingPage />} />
+            <Route path="/home" element={<HomeSpace />} />
+            <Route path="/advice" element={<AdvicePage isMobile={false} />} />
+            <Route
+              path="/tutorial"
+              element={<TutorialPage isMobile={false} />}
+            />
+            <Route path="/trainpiano" element={<TrainPiano />} />
+            <Route path="/dailychallenge" element={<PianoNotesChallenge />} />
+          </Routes>
+        </UserProvider>
       </ThemeProvider>
     </Suspense>
   );
