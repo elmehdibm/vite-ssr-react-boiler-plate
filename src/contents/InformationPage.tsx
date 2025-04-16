@@ -52,42 +52,6 @@ const InformationPage = ({ content }: InformationPageProps) => {
         <InlineWidget url="https://calendly.com/onaipiano7/30min" />
       )}
 
-      {/* Substack Subscription Embed */}
-      <Box sx={{ mb: 3 }}>
-        <Typography variant="h6" sx={{ mb: 1 }}>
-          📬 <Typography fontWeight="bold">Stay updated!</Typography>
-        </Typography>
-        <Typography variant="body2" sx={{ mb: 2 }}>
-          Get news, tips, and insights straight to your inbox! 💌
-        </Typography>
-        <Box
-          sx={{
-            width: "100%",
-            maxWidth: 480,
-            mx: "auto",
-            border: "1px solid #EEE",
-            backgroundColor: "white",
-            position: "relative",
-            paddingBottom: "66.67%", // 3:2 aspect ratio
-            height: 0,
-            overflow: "hidden",
-          }}
-        >
-          <iframe
-            src="https://onaipiano.substack.com/embed"
-            width="100%"
-            height="100%"
-            style={{
-              position: "absolute",
-              top: 0,
-              left: 0,
-              border: "none",
-            }}
-            scrolling="no"
-          ></iframe>
-        </Box>
-      </Box>
-
       {/* Social Media Links */}
       <Box sx={{ textAlign: "center", mb: 3 }}>
         <Typography variant="h6" sx={{ mb: 1 }}>

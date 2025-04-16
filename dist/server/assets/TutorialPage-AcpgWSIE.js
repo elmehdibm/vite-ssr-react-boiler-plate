@@ -3,6 +3,7 @@ import { useState } from "react";
 import SwipeableViews from "react-swipeable-views";
 import { useTheme, Box, IconButton, Typography, Button, Grid } from "@mui/material";
 import { ChevronLeft, ChevronRight, MusicNote, PlayArrow, Favorite, Timeline, CalendarToday, Psychology, Group } from "@mui/icons-material";
+import { useNavigate } from "react-router-dom";
 const TUTORIAL_CONTENT = {
   welcome: {
     title: "Welcome to Your Piano Journey",
@@ -105,7 +106,7 @@ const TUTORIAL_CONTENT = {
   },
   finalSteps: {
     title: "Your Personalized Timeline",
-    description: "While everyone's path is different, here's how we'll create your journey:",
+    description: "While everyone's path is different, here's an example of how we'll create your journey custom for you:",
     steps: [
       {
         title: "Week 1: Your Foundation",
@@ -142,6 +143,7 @@ function TutorialPage({ isMobile }) {
   const theme = useTheme();
   const maxSteps = 8;
   const [activeStep, setActiveStep] = useState(0);
+  const navigate = useNavigate();
   const typographyStyles = {
     welcome: {
       title: {
@@ -236,6 +238,9 @@ function TutorialPage({ isMobile }) {
   };
   const handleNext = () => {
     setActiveStep((prev) => Math.min(prev + 1, maxSteps - 1));
+    if (activeStep === maxSteps - 1) {
+      navigate("/home");
+    }
   };
   const handleBack = () => {
     setActiveStep((prev) => Math.max(prev - 1, 0));

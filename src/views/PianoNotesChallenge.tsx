@@ -15,13 +15,17 @@ import {
   Divider,
   Button,
   Switch,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
   useTheme,
   useMediaQuery,
 } from "@mui/material";
 import HistoryIcon from "@mui/icons-material/History";
 import CloseIcon from "@mui/icons-material/Close";
 
-// Utility: mapping note letters to solfege labels
+// Utility: map note letters to solfege labels when needed
 const getNoteLabel = (note: string, notation: "anglo" | "solfege") => {
   if (notation === "anglo") return note.toUpperCase();
   const mapping: { [key: string]: string } = {
@@ -37,52 +41,36 @@ const getNoteLabel = (note: string, notation: "anglo" | "solfege") => {
 };
 
 const PianoMasteryChallenge = () => {
-  // Retrieve provider state and functions
   const {
     user,
-    updateTimeSpent,
     updateCurrentLevel,
     toggleNotation,
     recordExerciseSession,
     challengeLevels,
   } = useUser();
 
-  // Local exercise state
+  // Local state variables
   const [currentSequence, setCurrentSequence] = useState<string[]>([]);
   const [currentIndex, setCurrentIndex] = useState<number>(0);
   const [roundCount, setRoundCount] = useState<number>(0);
   const [sessionScore, setSessionScore] = useState<number>(0);
   const [exerciseStarted, setExerciseStarted] = useState<boolean>(false);
-  const [lastKeyStatus, setLastKeyStatus] = useState<{
-    midi: number;
-    status: "correct" | "incorrect";
-  } | null>(null);
+  const [congratsOpen, setCongratsOpen] = useState<boolean>(false);
 
-  // Target rounds per session
-  const targetRounds = 20;
+  // Manage clef based on active level: Level 1 => treble, Level 2 => bass
+  const [clef, setClef] = useState<"treble" | "bass">("treble");
+  useEffect(() => {
+    if (user.currentLevel === 1) {
+      setClef("treble");
+    } else if (user.currentLevel === 2) {
+      setClef("bass");
+    }
+  }, [user.currentLevel]);
 
-  // Refs for VexFlow staff rendering
+  // VexFlow staff rendering
   const staffRef = useRef<HTMLDivElement | null>(null);
   const rendererRef = useRef<any>(null);
 
-  // Single octave ranges
-  const noteRanges = {
-    treble: {
-      first: MidiNumbers.fromNote("c4"),
-      last: MidiNumbers.fromNote("b4"),
-    },
-    bass: {
-      first: MidiNumbers.fromNote("c2"),
-      last: MidiNumbers.fromNote("b2"),
-    },
-  };
-
-  // Local clef state with toggle function
-  const [clef, setClef] = useState<"treble" | "bass">("treble");
-  const toggleClef = () =>
-    setClef((prev) => (prev === "treble" ? "bass" : "treble"));
-
-  // Initialize VexFlow renderer and redraw staff on sequence change
   useEffect(() => {
     if (staffRef.current && !rendererRef.current) {
       const { Renderer } = Vex.Flow;
@@ -95,7 +83,6 @@ const PianoMasteryChallenge = () => {
     redrawStaff(currentSequence);
   }, [currentSequence, clef]);
 
-  // Redraw staff with current sequence
   const redrawStaff = (sequence: string[]) => {
     if (!rendererRef.current) return;
     const context = rendererRef.current.getContext();
@@ -108,7 +95,7 @@ const PianoMasteryChallenge = () => {
         const staveNote = new StaveNote({
           keys: [`${note}/${octave}`],
           duration: "q",
-          clef: clef,
+          clef,
         });
         if (note.includes("#")) {
           staveNote.addModifier(new Accidental("#"));
@@ -123,53 +110,42 @@ const PianoMasteryChallenge = () => {
     }
   };
 
-  // Generate a new sequence (length equals current level)
+  // For revision levels, generate a single note
   const generateSequence = () => {
-    const numNotes = user.currentLevel;
     const available = ["c", "d", "e", "f", "g", "a", "b"];
-    const seq: string[] = [];
-    for (let i = 0; i < numNotes; i++) {
-      seq.push(available[Math.floor(Math.random() * available.length)]);
-    }
+    const seq = [available[Math.floor(Math.random() * available.length)]];
     setCurrentSequence(seq);
     setCurrentIndex(0);
   };
 
-  // Handle piano key press and check against the current sequence
+  // Handle piano key press
   const handleKeyPress = (midiNumber: number) => {
-    if (currentIndex >= currentSequence.length) return;
+    if (!exerciseStarted) return;
     const attributes = MidiNumbers.getAttributes(midiNumber);
     const pressed = attributes.note.replace(/[0-9]/g, "").toLowerCase();
-    const target = currentSequence[currentIndex].toLowerCase();
+    const target = currentSequence[currentIndex];
     if (pressed === target) {
       setSessionScore((prev) => prev + 10);
-      setLastKeyStatus({ midi: midiNumber, status: "correct" });
-      setTimeout(() => setLastKeyStatus(null), 500);
-      if (currentIndex === currentSequence.length - 1) {
-        setRoundCount((prev) => prev + 1);
-        if (roundCount + 1 >= targetRounds) {
-          recordExerciseSession(sessionScore + 10, targetRounds);
-          setExerciseStarted(false);
-          setRoundCount(0);
-          setSessionScore(0);
-        } else {
-          setTimeout(() => generateSequence(), 1000);
-        }
+      // Complete the round and generate a new note
+      setRoundCount((prev) => prev + 1);
+      if (roundCount + 1 >= 20) {
+        recordExerciseSession(sessionScore + 10, 20);
+        setCongratsOpen(true);
+        setExerciseStarted(false);
       } else {
-        setCurrentIndex((prev) => prev + 1);
+        setTimeout(() => generateSequence(), 1000);
       }
     } else {
+      // Deduct points for a wrong key press (score never goes below 0)
       setSessionScore((prev) => Math.max(0, prev - 2));
-      setLastKeyStatus({ midi: midiNumber, status: "incorrect" });
-      setTimeout(() => setLastKeyStatus(null), 500);
     }
   };
 
   // Start a new exercise session
   const startExercise = () => {
     setExerciseStarted(true);
-    setRoundCount(0);
     setSessionScore(0);
+    setRoundCount(0);
     generateSequence();
   };
 
@@ -182,15 +158,11 @@ const PianoMasteryChallenge = () => {
     if (exerciseStarted) generateSequence();
   };
 
-  // Render note label on piano keys based on chosen notation with feedback coloring
+  // Render note label on piano keys
   const renderNoteLabel = ({ midiNumber }: { midiNumber: number }) => {
     const attributes = MidiNumbers.getAttributes(midiNumber);
     const baseLabel = attributes.note.replace(/[0-9]/g, "").toLowerCase();
     const label = getNoteLabel(baseLabel, user.notation);
-    const isFeedback =
-      lastKeyStatus && lastKeyStatus.midi === midiNumber
-        ? lastKeyStatus.status
-        : null;
     return (
       <Box
         sx={{
@@ -201,14 +173,6 @@ const PianoMasteryChallenge = () => {
           fontSize: "0.85em",
           fontWeight: "bold",
           color: "#333",
-          bgcolor:
-            isFeedback === "correct"
-              ? "#4caf50"
-              : isFeedback === "incorrect"
-              ? "#f44336"
-              : "transparent",
-          px: isFeedback ? 0.5 : 0,
-          borderRadius: 1,
         }}
       >
         {label}
@@ -221,7 +185,7 @@ const PianoMasteryChallenge = () => {
 
   return (
     <Box sx={{ maxWidth: 900, mx: "auto", p: 2 }}>
-      {/* Header: Notation switch and History button */}
+      {/* Header: Notation toggle and History button */}
       <Box
         sx={{
           display: "flex",
@@ -244,11 +208,11 @@ const PianoMasteryChallenge = () => {
           onClick={() => toggleDrawer(true)}
           sx={{ color: "#1a5da6" }}
         >
-          <HistoryIcon fontSize="large" />
+          <HistoryIcon />
         </IconButton>
       </Box>
 
-      {/* Dashboard: Level Title and Score */}
+      {/* Dashboard: Level title and current score */}
       <Box sx={{ textAlign: "center", mb: 2 }}>
         <Typography variant="h4" sx={{ fontWeight: "bold", color: "#1a5da6" }}>
           Level {user.currentLevel}:{" "}
@@ -263,7 +227,12 @@ const PianoMasteryChallenge = () => {
       <Box sx={{ mb: 2, textAlign: "center" }}>
         <Box
           ref={staffRef}
-          sx={{ backgroundColor: "#fff", p: 2, borderRadius: 2, boxShadow: 1 }}
+          sx={{
+            backgroundColor: "#fff",
+            p: 2,
+            borderRadius: 2,
+            boxShadow: 1,
+          }}
         />
       </Box>
 
@@ -280,7 +249,10 @@ const PianoMasteryChallenge = () => {
       >
         <Box sx={{ width: "100%", maxWidth: 600, height: 150 }}>
           <Piano
-            noteRange={noteRanges[clef]}
+            noteRange={{
+              first: MidiNumbers.fromNote(clef === "treble" ? "c4" : "c2"),
+              last: MidiNumbers.fromNote(clef === "treble" ? "b4" : "b2"),
+            }}
             activeNotes={
               currentSequence.length > 0 &&
               currentIndex < currentSequence.length
@@ -302,21 +274,25 @@ const PianoMasteryChallenge = () => {
         </Box>
       </Box>
 
-      {/* Action Area: Start Exercise or Show Progress */}
+      {/* Action Area: Start Exercise / Progress display */}
       <Box sx={{ textAlign: "center", mt: 2 }}>
         {!exerciseStarted ? (
           <Button
             variant="contained"
             color="primary"
             onClick={startExercise}
+            disabled={
+              !challengeLevels.find((l) => l.level === user.currentLevel)
+                ?.enabled
+            }
             sx={{ px: 4, py: 1 }}
           >
             Start Exercise
           </Button>
         ) : (
           <Typography variant="subtitle1">
-            Round {roundCount + 1} of {targetRounds} – Note {currentIndex + 1}{" "}
-            of {currentSequence.length}
+            Round {roundCount + 1} - Note {currentIndex + 1} of{" "}
+            {currentSequence.length}
           </Typography>
         )}
       </Box>
@@ -347,6 +323,7 @@ const PianoMasteryChallenge = () => {
               <ListItemButton
                 key={lvl.level}
                 onClick={() => handleLevelSelect(lvl.level)}
+                disabled={!lvl.enabled}
               >
                 <ListItemText
                   primary={`${lvl.title} (Level ${lvl.level})`}
@@ -355,28 +332,24 @@ const PianoMasteryChallenge = () => {
               </ListItemButton>
             ))}
           </List>
-          <Divider sx={{ my: 1 }} />
-          <Typography variant="h6" sx={{ mt: 1 }}>
-            Exercise History
-          </Typography>
-          <List>
-            {user.exerciseHistory?.length ? (
-              user.exerciseHistory.map((item, idx) => (
-                <ListItemButton key={idx}>
-                  <ListItemText
-                    primary={`Score: ${item.score} on ${item.date}`}
-                    secondary={`Level ${item.level} – ${item.rounds} rounds`}
-                  />
-                </ListItemButton>
-              ))
-            ) : (
-              <Typography variant="body2" sx={{ p: 1 }}>
-                No history yet.
-              </Typography>
-            )}
-          </List>
         </Box>
       </Drawer>
+
+      {/* Congratulations Dialog */}
+      <Dialog open={congratsOpen} onClose={() => setCongratsOpen(false)}>
+        <DialogTitle>Congratulations!</DialogTitle>
+        <DialogContent>
+          <Typography>
+            You have completed the exercise session with a total score of{" "}
+            {sessionScore}!
+          </Typography>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setCongratsOpen(false)} color="primary">
+            Close
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Box>
   );
 };

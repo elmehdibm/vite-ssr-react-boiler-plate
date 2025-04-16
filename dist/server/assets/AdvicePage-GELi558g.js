@@ -5,8 +5,7 @@ import { KeyboardArrowRight, KeyboardArrowLeft } from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
 import SwipeableViews from "react-swipeable-views";
 import { autoPlay } from "react-swipeable-views-utils";
-const AutoPlaySwipeableViews = autoPlay(SwipeableViews);
-const SLIDE_CONTENT = [
+const SLIDE_CONTENT_ADVICES = [
   {
     title: "Finding Your Perfect Sitting Position",
     why: "Good posture prevents fatigue and injury, helping you play longer and better.",
@@ -50,10 +49,11 @@ const SLIDE_CONTENT = [
     quickTip: "Record yourself playing - you'll hear things you didn't notice while playing."
   }
 ];
+const AutoPlaySwipeableViews = autoPlay(SwipeableViews);
 function AdvicePage({ isMobile }) {
   const [currentSlide, setCurrentSlide] = useState(0);
   const navigate = useNavigate();
-  const maxSteps = SLIDE_CONTENT.length;
+  const maxSteps = SLIDE_CONTENT_ADVICES.length;
   const handleNext = () => {
     setCurrentSlide((prev) => (prev + 1) % maxSteps);
   };
@@ -97,7 +97,7 @@ function AdvicePage({ isMobile }) {
                 enableMouseEvents: true,
                 interval: 6e3,
                 style: { flex: 1 },
-                children: SLIDE_CONTENT.map((slide, index) => /* @__PURE__ */ jsxs(Box, { sx: { height: "100%", overflowY: "hidden" }, children: [
+                children: SLIDE_CONTENT_ADVICES.map((slide, index) => /* @__PURE__ */ jsxs(Box, { sx: { height: "100%", overflowY: "hidden" }, children: [
                   /* @__PURE__ */ jsx(
                     Box,
                     {
@@ -239,7 +239,7 @@ function AdvicePage({ isMobile }) {
               {
                 color: "primary",
                 variant: "contained",
-                onClick: () => navigate("/tutorial"),
+                onClick: () => navigate("/home"),
                 sx: {
                   mt: 2,
                   "&:hover": {

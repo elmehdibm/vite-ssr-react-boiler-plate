@@ -4,6 +4,9 @@ import PianoNotesChallenge from "../views/PianoNotesChallenge";
 import { createTheme, ThemeProvider } from "@mui/material";
 import HomeSpace from "../views/HomeSpace";
 import { UserProvider } from "../utils/UserProvider";
+import InformationPage from "../contents/InformationPage";
+import LearnSongPage from "../views/SongLearningPage";
+import SongLearningPage from "../views/SongLearningPage";
 
 const Home = lazy(() => import("../views/Home"));
 const TrainPiano = lazy(() => import("../views/TrainPiano"));
@@ -45,7 +48,9 @@ export const Router = ({ isMobile }: any) => {
               <Route path="/home" element={<HomeSpace />} />
               <Route path="/advice" element={<AdvicePage isMobile />} />
               <Route path="/tutorial" element={<TutorialPage isMobile />} />
+              <Route path="/contact" element={<InformationPage />} />
               <Route path="/dailychallenge" element={<PianoNotesChallenge />} />
+              <Route path="/learnsong" element={<SongLearningPage />} />
             </Routes>
           </UserProvider>
         </ThemeProvider>
@@ -69,7 +74,9 @@ export const Router = ({ isMobile }: any) => {
               element={<TutorialPage isMobile={false} />}
             />
             <Route path="/trainpiano" element={<TrainPiano />} />
+            <Route path="/contact" element={<InformationPage />} />
             <Route path="/dailychallenge" element={<PianoNotesChallenge />} />
+            <Route path="/learnsong" element={<SongLearningPage />} />
           </Routes>
         </UserProvider>
       </ThemeProvider>

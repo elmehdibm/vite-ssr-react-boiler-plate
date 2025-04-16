@@ -28,6 +28,7 @@ import MainViewSpace from "../contents/MainViewSpace";
 import { useUser } from "../utils/UserProvider";
 import CloseIcon from "@mui/icons-material/Close";
 import InformationPage from "../contents/InformationPage";
+import { useNavigate } from "react-router-dom";
 
 // Define a custom theme
 const theme = createTheme({
@@ -109,6 +110,7 @@ const StyledBottomNavigationAction = styled(BottomNavigationAction)(
 
 const HomeSpace = () => {
   const [value, setValue] = useState(0);
+  const navigate = useNavigate();
   const { user } = useUser();
   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
   const [drawerOpen, setDrawerOpen] = useState(false);
@@ -202,6 +204,7 @@ const HomeSpace = () => {
                 onClick={() => {
                   // Navigate to Edit Profile page
                   toggleDrawer(false);
+                  navigate("/contact");
                 }}
               >
                 <ListItemText primary="Edit Profile" />
@@ -210,6 +213,7 @@ const HomeSpace = () => {
                 onClick={() => {
                   // Navigate to Contact page
                   toggleDrawer(false);
+                  navigate("/contact");
                 }}
               >
                 <ListItemText primary="Contact" />
@@ -218,6 +222,7 @@ const HomeSpace = () => {
                 onClick={() => {
                   // Navigate to Blog page
                   toggleDrawer(false);
+                  navigate("/contact");
                 }}
               >
                 <ListItemText primary="Blog" />
@@ -229,15 +234,21 @@ const HomeSpace = () => {
         <MainContent isMobile={isMobile}>
           <Container>
             {value === 0 && <MainViewSpace />}
-            {value === 1 && <InformationPage content="Connect with fellow piano enthusiasts who share your musical interests and goals." />}
-            {value === 2 && <InformationPage content="Through analyzing your style and goals, we create a personalized timeline that evolves with you." />}
-            {value === 3 && <InformationPage content="Music is about emotion - we help you connect with every piece you play." />}
+            {value === 1 && (
+              <InformationPage content="Connect with fellow piano enthusiasts who share your musical interests and goals." />
+            )}
+            {value === 2 && (
+              <InformationPage content="Through analyzing your style and goals, we create a personalized timeline that evolves with you." />
+            )}
+            {value === 3 && (
+              <InformationPage content="Music is about emotion - we help you connect with every piece you play." />
+            )}
           </Container>
         </MainContent>
 
         <StyledBottomNavigation
           value={value}
-          onChange={(event, newValue) => {
+          onChange={(_, newValue) => {
             console.log(newValue);
             setValue(newValue);
           }}

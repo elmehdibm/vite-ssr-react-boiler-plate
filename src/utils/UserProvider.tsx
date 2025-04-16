@@ -29,6 +29,7 @@ export interface ChallengeLevel {
   title: string;
   description: string;
   progress: number; // percentage progress in this level
+  enabled: boolean; // Whether this level is active
 }
 
 // Type for an exercise session history item
@@ -39,6 +40,15 @@ export interface ExerciseHistoryItem {
   rounds: number;
 }
 
+// Type for the current song being learned
+export interface Song {
+  title: string;
+  description?: string;
+  timeSpent: number; // minutes spent training this song
+  totalTime: number; // total minutes required for song training
+  trainingSessions: number; // number of training sessions for this song
+}
+
 // User state type
 interface User {
   name: string;
@@ -46,13 +56,14 @@ interface User {
   streak: number;
   lastChallengeDate: string | null;
   challengeHistory: string[]; // dates when a challenge was completed
-  timeSpent: number; // minutes practiced today
+  timeSpent: number; // minutes practiced today (challenge practice)
   currentLevel: number;
   notation: "anglo" | "solfege";
   exerciseHistory: ExerciseHistoryItem[];
+  currentSong?: Song; // current song training info
 }
 
-// Context type – includes functions to update profile, challenge, and gamification data
+// Context type – includes functions to update profile, challenge, exercise, and song training data
 interface UserContextType {
   user: User;
   updateProfileName: (newName: string) => void;
@@ -61,6 +72,7 @@ interface UserContextType {
   updateCurrentLevel: (level: number) => void;
   toggleNotation: () => void;
   recordExerciseSession: (score: number, rounds: number) => void;
+  updateSongTraining: (minutes: number, newSession?: boolean) => void;
   dailyProgress: number;
   chartData: any;
   chartOptions: any;
@@ -78,28 +90,40 @@ const defaultUser: User = {
   currentLevel: 1,
   notation: "anglo",
   exerciseHistory: [],
+  // Initialize with an example current song (e.g., Solas of Jamie Duffy)
+  currentSong: {
+    title: "Solas of Jamie Duffy",
+    description:
+      "Practice and master the technique of Solas as described by Jamie Duffy.",
+    timeSpent: 0,
+    totalTime: 3, // Default total song duration is 3 minutes
+    trainingSessions: 0,
+  },
 };
 
+// Updated challenge levels: only revision levels are active (levels 1 and 2)
 const defaultChallengeLevels: ChallengeLevel[] = [
   {
     level: 1,
-    title: "Single Note Mastery",
-    description: "Play one note correctly.",
+    title: "Treble Clef Revision",
+    description: "Revise the notes in the treble clef.",
     progress: 0,
+    enabled: true,
   },
   {
     level: 2,
-    title: "Double Note Challenge",
-    description: "Play two notes in sequence correctly.",
+    title: "Bass Clef Revision",
+    description: "Revise the notes in the bass clef.",
     progress: 0,
+    enabled: true,
   },
   {
     level: 3,
-    title: "Triple Note Challenge",
-    description: "Play three notes in sequence correctly.",
+    title: "Coming Soon",
+    description: "Stay tuned for future challenges!",
     progress: 0,
+    enabled: false,
   },
-  // More levels can be added here…
 ];
 
 const UserContext = createContext<UserContextType | undefined>(undefined);
@@ -177,10 +201,20 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
     }));
   };
 
-  const updateChallengeProgress = (level: number, progress: number) => {
-    setChallengeLevels((prev) =>
-      prev.map((l) => (l.level === level ? { ...l, progress } : l))
-    );
+  // Update song training progress. When newSession is true, the training session counter increases.
+  const updateSongTraining = (minutes: number, newSession: boolean = false) => {
+    setUser((prev) => ({
+      ...prev,
+      currentSong: prev.currentSong
+        ? {
+            ...prev.currentSong,
+            timeSpent: prev.currentSong.timeSpent + minutes,
+            trainingSessions: newSession
+              ? prev.currentSong.trainingSessions + 1
+              : prev.currentSong.trainingSessions,
+          }
+        : prev.currentSong,
+    }));
   };
 
   // Daily goal in minutes; progress is computed accordingly.
@@ -214,11 +248,15 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
         updateCurrentLevel,
         toggleNotation,
         recordExerciseSession,
+        updateSongTraining,
         dailyProgress,
         chartData,
         chartOptions,
         challengeLevels,
-        updateChallengeProgress,
+        updateChallengeProgress: (level: number, progress: number) =>
+          setChallengeLevels((prev) =>
+            prev.map((l) => (l.level === level ? { ...l, progress } : l))
+          ),
       }}
     >
       {children}
@@ -231,3 +269,5 @@ export const useUser = (): UserContextType => {
   if (!context) throw new Error("useUser must be used within a UserProvider");
   return context;
 };
+
+export default UserProvider;

@@ -1,7 +1,24 @@
 import { jsxs, jsx } from "react/jsx-runtime";
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { Typography, Stack, styled, Box, TextField, Button } from "@mui/material";
+import { Box, Typography, Stack, styled, TextField, Button } from "@mui/material";
+import { u as useUser, L as Logo } from "./index-Ch6ILhHA.js";
+import "vexflow";
+import "react-piano";
+import "@mui/icons-material/History";
+import "@mui/icons-material/Close";
+import "@mui/material/styles/index.js";
+import "@mui/icons-material";
+import "@mui/system";
+import "react-chartjs-2";
+import "@mui/icons-material/LibraryBooks";
+import "@mui/icons-material/Psychology";
+import "@mui/icons-material/Whatshot";
+import "@mui/icons-material/MusicNote";
+import "@mui/icons-material/Instagram";
+import "@mui/icons-material/Facebook";
+import "chart.js";
+import "react-calendly";
 const OnboardingContainer = styled(Box)(({ theme }) => ({
   display: "flex",
   flexDirection: "column",
@@ -84,6 +101,7 @@ const journeyLevels = [
   }
 ];
 function OnboardingPage() {
+  const { updateProfileName } = useUser();
   const [name, setName] = useState("");
   const [selectedLevel, setSelectedLevel] = useState("");
   const navigate = useNavigate();
@@ -93,24 +111,20 @@ function OnboardingPage() {
   }, []);
   const handleLevelSelect = (level) => {
     setSelectedLevel(level);
-    localStorage.setItem("userName", name);
+    updateProfileName(name);
     navigate(level === "New to piano" ? "/advice" : "/tutorial");
   };
   return /* @__PURE__ */ jsxs(OnboardingContainer, { children: [
     /* @__PURE__ */ jsx(
-      Typography,
+      Box,
       {
-        variant: "h1",
-        component: "h1",
+        component: "img",
+        src: Logo,
+        alt: "OnaiPiano Logo",
         sx: {
-          position: "relative",
-          fontFamily: "Monoton, cursive",
-          textAlign: "center",
-          marginBottom: 4,
-          color: "#1a5da6",
-          fontSize: { xs: "3rem", sm: "4rem", md: "5rem" }
-        },
-        children: "OnaiPiano"
+          width: { xs: "150px", sm: "200px", md: "250px" },
+          marginBottom: 4
+        }
       }
     ),
     /* @__PURE__ */ jsx(

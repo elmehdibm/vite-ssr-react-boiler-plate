@@ -12,6 +12,8 @@ import { styled } from "@mui/system";
 import { Doughnut } from "react-chartjs-2";
 import LibraryBooksIcon from "@mui/icons-material/LibraryBooks";
 import PsychologyIcon from "@mui/icons-material/Psychology";
+import WhatshotIcon from "@mui/icons-material/Whatshot"; // Icon for challenge
+import MusicNoteIcon from "@mui/icons-material/MusicNote"; // Icon for song learning
 import InstagramIcon from "@mui/icons-material/Instagram";
 import FacebookIcon from "@mui/icons-material/Facebook";
 import { useNavigate } from "react-router-dom";
@@ -94,7 +96,7 @@ const MainViewSpace = () => {
   const navigate = useNavigate();
   const { user, chartData, chartOptions, challengeLevels } = useUser();
 
-  // Daily goal (in minutes) – must match provider's value
+  // Daily goal for today's challenge (in minutes) – must match provider's value
   const dailyGoal = 30;
 
   // Compute an array for the last 7 days based on the user's challenge history
@@ -106,7 +108,6 @@ const MainViewSpace = () => {
       d.setDate(today.getDate() - i);
       const dateStr = getDateString(d);
       daysArray.push({
-        // Use the first letter of the weekday (e.g., "M" for Monday)
         letter: d.toLocaleString("en-US", { weekday: "short" }).charAt(0),
         completed: (user.challengeHistory || []).includes(dateStr),
         active: dateStr === getDateString(today),
@@ -132,6 +133,33 @@ const MainViewSpace = () => {
     (level) => level.level === user.currentLevel
   );
 
+  // --- New code for "Song Learning" ---
+  // Assume user.currentSong contains:
+  //   title, description, timeSpent (song training time), totalTime, and trainingSessions (number of sessions)
+  const currentSong = user.currentSong || null;
+  const defaultSongTotalTime = 3; // default song length in minutes for example
+  const songTimeSpent = currentSong ? currentSong.timeSpent : 0;
+  const songTotalTime = currentSong
+    ? currentSong.totalTime
+    : defaultSongTotalTime;
+  const remainingSongMinutes = Math.max(songTotalTime - songTimeSpent, 0);
+
+  // Assume the provider will provide number of song training sessions (fallback to 0)
+  const songTrainingSessions = currentSong
+    ? currentSong.trainingSessions || 0
+    : 0;
+
+  const songChartData = {
+    labels: ["Learned", "Remaining"],
+    datasets: [
+      {
+        data: [songTimeSpent, remainingSongMinutes],
+        backgroundColor: ["#1a5da6", "#f0f0f0"],
+        borderWidth: 0,
+      },
+    ],
+  };
+
   return (
     <Box
       sx={{
@@ -149,9 +177,11 @@ const MainViewSpace = () => {
           <Box
             sx={{
               display: "flex",
+              flexDirection: { xs: "column", sm: "row" },
               justifyContent: "space-between",
               alignItems: "center",
               mb: 2,
+              textAlign: { xs: "center", sm: "left" },
             }}
           >
             <Typography variant="h6">Current Streak</Typography>
@@ -161,7 +191,7 @@ const MainViewSpace = () => {
           </Box>
           <Grid container spacing={1}>
             {days.map((day, index) => (
-              <Grid item xs={1.5} sm={1.5} key={index}>
+              <Grid item xs={1.5} key={index}>
                 <StyledDay
                   completed={!!day.completed}
                   active={day.active ? true : undefined}
@@ -177,9 +207,23 @@ const MainViewSpace = () => {
       {/* Today's Challenge Card */}
       <StyledCard>
         <CardContent>
-          <Typography variant="h6" sx={{ mb: 3 }}>
-            Today's Challenge
-          </Typography>
+          <Box
+            sx={{
+              mb: 3,
+              display: "flex",
+              alignItems: "center",
+              gap: 1,
+              justifyContent: { xs: "center", sm: "flex-start" },
+            }}
+          >
+            <WhatshotIcon sx={{ color: "#1a5da6" }} />
+            <Typography
+              variant="h6"
+              sx={{ textAlign: { xs: "center", sm: "left" } }}
+            >
+              Today's Challenge
+            </Typography>
+          </Box>
           <Grid container spacing={3}>
             <Grid item xs={12} sm={3}>
               <Box sx={{ position: "relative", height: 120 }}>
@@ -251,21 +295,101 @@ const MainViewSpace = () => {
         </CardContent>
       </StyledCard>
 
-      <StyledCard
-        sx={{
-          mx: "0",
-          border: "1px solid #EEE",
-          backgroundColor: "white",
-        }}
-      >
-        <iframe
-          src="https://onaipiano.substack.com/embed"
-          width="100%"
-          height="320"
-          style={{ border: "1px solid #EEE", background: "white" }}
-          frameBorder="0"
-          title="Subscribe to our Newsletter"
-        ></iframe>
+      {/* Song Learning Card */}
+      <StyledCard>
+        <CardContent>
+          <Box
+            sx={{
+              mb: 3,
+              display: "flex",
+              alignItems: "center",
+              gap: 1,
+              justifyContent: { xs: "center", sm: "flex-start" },
+            }}
+          >
+            <MusicNoteIcon sx={{ color: "#1a5da6" }} />
+            <Typography
+              variant="h6"
+              sx={{ textAlign: { xs: "center", sm: "left" } }}
+            >
+              Song Learning
+            </Typography>
+          </Box>
+          <Grid container spacing={3}>
+            <Grid item xs={12} sm={3}>
+              <Box sx={{ position: "relative", height: 120 }}>
+                <Doughnut
+                  key={remainingSongMinutes}
+                  data={songChartData}
+                  options={chartOptions}
+                />
+                <Box
+                  sx={{
+                    position: "absolute",
+                    top: "50%",
+                    left: "50%",
+                    transform: "translate(-50%, -50%)",
+                    textAlign: "center",
+                  }}
+                >
+                  <Typography variant="h6" sx={{ fontWeight: "bold" }}>
+                    {remainingSongMinutes > 0
+                      ? `${remainingSongMinutes} min`
+                      : "Complete!"}
+                  </Typography>
+                  <Typography
+                    variant="caption"
+                    sx={{ color: "text.secondary" }}
+                  >
+                    left to learn
+                  </Typography>
+                </Box>
+              </Box>
+            </Grid>
+            <Grid
+              item
+              xs={12}
+              sm={9}
+              sx={{
+                display: "flex",
+                flexDirection: "column",
+                alignItems: { xs: "center", sm: "flex-start" },
+                textAlign: { xs: "center", sm: "left" },
+              }}
+            >
+              {currentSong ? (
+                <>
+                  <Typography variant="subtitle1">
+                  Current Song: <strong>{currentSong.title}</strong>
+                  </Typography>
+                  <Typography
+                    variant="body1"
+                    sx={{ mt: 1 }}
+                  >
+                    Training Sessions: <strong> {songTrainingSessions} </strong>
+                  </Typography>
+                  <Typography
+                    variant="body1"
+                    sx={{ mt: 1 }}
+                  >
+                    Time Spent: <strong> {songTimeSpent} min </strong>
+                  </Typography>
+                </>
+              ) : (
+                <Typography variant="body2" sx={{ mt: 1 }}>
+                  No song in progress yet. Start your first song to see progress
+                  here.
+                </Typography>
+              )}
+              <StyledActionButton
+                onClick={() => navigate("/learnsong")}
+                sx={{ mt: 2 }}
+              >
+                {currentSong ? "Continue Learning" : "Start Learning"}
+              </StyledActionButton>
+            </Grid>
+          </Grid>
+        </CardContent>
       </StyledCard>
 
       {/* Navigation Cards */}
@@ -300,17 +424,24 @@ const MainViewSpace = () => {
         </Grid>
       </Grid>
 
-      {/* Social Media & Newsletter Subscription Bar */}
+      {/* Social Media & Newsletter Subscription */}
       <Box sx={{ textAlign: "center", mt: 4 }}>
         <Box sx={{ display: "flex", justifyContent: "center", gap: 3, mb: 2 }}>
           <IconButton
-            onClick={() => window.open("https://www.instagram.com/onai.piano/", "_blank")}
+            onClick={() =>
+              window.open("https://www.instagram.com/onai.piano/", "_blank")
+            }
             sx={{ color: "#C13584" }}
           >
             <InstagramIcon fontSize="large" />
           </IconButton>
           <IconButton
-            onClick={() => window.open("https://www.facebook.com/profile.php?id=61573215503097", "_blank")}
+            onClick={() =>
+              window.open(
+                "https://www.facebook.com/profile.php?id=61573215503097",
+                "_blank"
+              )
+            }
             sx={{ color: "#3b5998" }}
           >
             <FacebookIcon fontSize="large" />
