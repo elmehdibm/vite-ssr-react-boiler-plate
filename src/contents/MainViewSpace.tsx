@@ -73,7 +73,7 @@ const StreakCount = styled(Typography)(({ theme }) => ({
   animation: "pulse 2s infinite",
 }));
 
-const StyledActionButton = styled(Button)(({ theme }) => ({
+const StyledActionButtonPrimary = styled(Button)(({ theme }) => ({
   borderRadius: "8px",
   backgroundColor: theme.palette.primary.main,
   color: "#ffffff",
@@ -92,7 +92,7 @@ const StyledActionButton = styled(Button)(({ theme }) => ({
 // Helper function to get a date string in YYYY-MM-DD format
 const getDateString = (date: Date): string => date.toISOString().split("T")[0];
 
-const MainViewSpace = () => {
+const MainViewSpace = ({ setValuePage }) => {
   const navigate = useNavigate();
   const { user, chartData, chartOptions, challengeLevels } = useUser();
 
@@ -284,12 +284,26 @@ const MainViewSpace = () => {
                   </Typography>
                 </Box>
               )}
-              <StyledActionButton
-                onClick={() => navigate("/dailychallenge")}
-                sx={{ mt: 2 }}
+              <Box
+                sx={{
+                  gap: 2,
+                  display: "flex",
+                  flexDirection: { xs: "column", sm: "row" },
+                }}
               >
-                {todaysChallenge ? "Continue Practice" : "Start Practice"}
-              </StyledActionButton>
+                <StyledActionButtonPrimary
+                  onClick={() => navigate("/dailychallenge")}
+                  sx={{ mt: 2 }}
+                >
+                  {todaysChallenge ? "Continue Practice" : "Start Practice"}
+                </StyledActionButtonPrimary>
+                <StyledActionButtonPrimary
+                  onClick={() => setValuePage(3)}
+                  sx={{ mt: 2 }}
+                >
+                  {"Discover Challenges"}
+                </StyledActionButtonPrimary>
+              </Box>
             </Grid>
           </Grid>
         </CardContent>
@@ -360,18 +374,12 @@ const MainViewSpace = () => {
               {currentSong ? (
                 <>
                   <Typography variant="subtitle1">
-                  Current Song: <strong>{currentSong.title}</strong>
+                    Current Song: <strong>{currentSong.title}</strong>
                   </Typography>
-                  <Typography
-                    variant="body1"
-                    sx={{ mt: 1 }}
-                  >
+                  <Typography variant="body1" sx={{ mt: 1 }}>
                     Training Sessions: <strong> {songTrainingSessions} </strong>
                   </Typography>
-                  <Typography
-                    variant="body1"
-                    sx={{ mt: 1 }}
-                  >
+                  <Typography variant="body1" sx={{ mt: 1 }}>
                     Time Spent: <strong> {songTimeSpent} min </strong>
                   </Typography>
                 </>
@@ -381,12 +389,26 @@ const MainViewSpace = () => {
                   here.
                 </Typography>
               )}
-              <StyledActionButton
-                onClick={() => navigate("/learnsong")}
-                sx={{ mt: 2 }}
+              <Box
+                sx={{
+                  gap: 2,
+                  display: "flex",
+                  flexDirection: { xs: "column", sm: "row" },
+                }}
               >
-                {currentSong ? "Continue Learning" : "Start Learning"}
-              </StyledActionButton>
+                <StyledActionButtonPrimary
+                  onClick={() => navigate("/learnsong")}
+                  sx={{ mt: 2 }}
+                >
+                  {currentSong ? "Continue Learning" : "Start Learning"}
+                </StyledActionButtonPrimary>
+                <StyledActionButtonPrimary
+                  onClick={() => navigate("/learnsong")}
+                  sx={{ mt: 2 }}
+                >
+                  {"Go to Studies"}
+                </StyledActionButtonPrimary>
+              </Box>
             </Grid>
           </Grid>
         </CardContent>

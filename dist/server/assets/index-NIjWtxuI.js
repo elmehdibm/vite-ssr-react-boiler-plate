@@ -802,43 +802,49 @@ const MainViewSpace = () => {
                       "Current Song: ",
                       /* @__PURE__ */ jsx("strong", { children: currentSong.title })
                     ] }),
-                    /* @__PURE__ */ jsxs(
-                      Typography,
-                      {
-                        variant: "body1",
-                        sx: { mt: 1 },
-                        children: [
-                          "Training Sessions: ",
-                          /* @__PURE__ */ jsxs("strong", { children: [
-                            " ",
-                            songTrainingSessions,
-                            " "
-                          ] })
-                        ]
-                      }
-                    ),
-                    /* @__PURE__ */ jsxs(
-                      Typography,
-                      {
-                        variant: "body1",
-                        sx: { mt: 1 },
-                        children: [
-                          "Time Spent: ",
-                          /* @__PURE__ */ jsxs("strong", { children: [
-                            " ",
-                            songTimeSpent,
-                            " min "
-                          ] })
-                        ]
-                      }
-                    )
+                    /* @__PURE__ */ jsxs(Typography, { variant: "body1", sx: { mt: 1 }, children: [
+                      "Training Sessions: ",
+                      /* @__PURE__ */ jsxs("strong", { children: [
+                        " ",
+                        songTrainingSessions,
+                        " "
+                      ] })
+                    ] }),
+                    /* @__PURE__ */ jsxs(Typography, { variant: "body1", sx: { mt: 1 }, children: [
+                      "Time Spent: ",
+                      /* @__PURE__ */ jsxs("strong", { children: [
+                        " ",
+                        songTimeSpent,
+                        " min "
+                      ] })
+                    ] })
                   ] }) : /* @__PURE__ */ jsx(Typography, { variant: "body2", sx: { mt: 1 }, children: "No song in progress yet. Start your first song to see progress here." }),
-                  /* @__PURE__ */ jsx(
-                    StyledActionButton,
+                  /* @__PURE__ */ jsxs(
+                    Box,
                     {
-                      onClick: () => navigate("/learnsong"),
-                      sx: { mt: 2 },
-                      children: currentSong ? "Continue Learning" : "Start Learning"
+                      sx: {
+                        gap: 2,
+                        display: "flex",
+                        flexDirection: { xs: "column", sm: "row" }
+                      },
+                      children: [
+                        /* @__PURE__ */ jsx(
+                          StyledActionButton,
+                          {
+                            onClick: () => navigate("/learnsong"),
+                            sx: { mt: 2 },
+                            children: currentSong ? "Continue Learning" : "Start Learning"
+                          }
+                        ),
+                        /* @__PURE__ */ jsx(
+                          StyledActionButton,
+                          {
+                            onClick: () => navigate("/learnsong"),
+                            sx: { mt: 2 },
+                            children: "Go to Studies"
+                          }
+                        )
+                      ]
                     }
                   )
                 ]
@@ -1160,7 +1166,7 @@ const HomeSpace = () => {
                   {
                     onClick: () => {
                       toggleDrawer(false);
-                      navigate("/contact");
+                      navigate("/blog");
                     },
                     children: /* @__PURE__ */ jsx(ListItemText, { primary: "Blog" })
                   }
@@ -1345,9 +1351,7 @@ const SongLearningPage = () => {
         sx: {
           height: "100vh",
           overflowY: "auto",
-          p: 2,
-          background: "#f5f5f5"
-          // subtle background for contrast
+          p: 2
         },
         children: /* @__PURE__ */ jsxs(
           Box,
@@ -1522,11 +1526,331 @@ const SongLearningPage = () => {
     )
   );
 };
-lazy(() => import("./Home-aoWihwri.js"));
-const TrainPiano = lazy(() => import("./TrainPiano-BY64VzeD.js"));
-const OnboardingPage = lazy(() => import("./OnBoarding-DsOGqXSJ.js"));
+const landingPageTheme = createTheme$1({
+  palette: {
+    primary: {
+      main: "#1a5da6",
+      light: "rgba(74, 144, 226, 0.1)",
+      dark: "#3A72B4"
+    },
+    secondary: { main: "#1a5da6" },
+    accent: { main: "#FF6B6B" },
+    background: { default: "#f5f7fa", paper: "#ffffff" },
+    text: { primary: "#1a5da6" }
+  },
+  shape: { borderRadius: 12 },
+  spacing: 8,
+  typography: {
+    fontFamily: "'Poppins','Roboto','Arial',sans-serif",
+    h1: {
+      fontSize: "3rem",
+      fontWeight: 700,
+      lineHeight: 1.2,
+      "@media (max-width:600px)": { fontSize: "2rem" }
+    },
+    h2: {
+      fontSize: "2.5rem",
+      fontWeight: 600,
+      lineHeight: 1.3,
+      "@media (max-width:600px)": { fontSize: "1.8rem" }
+    }
+    // ... other variants
+  },
+  components: {
+    MuiButton: {
+      styleOverrides: {
+        root: {
+          borderRadius: 50,
+          textTransform: "none",
+          fontWeight: 600,
+          padding: "12px 28px"
+        }
+      }
+    },
+    MuiCard: {
+      styleOverrides: {
+        root: {
+          borderRadius: 16,
+          boxShadow: "0 6px 12px rgba(0,0,0,0.08)",
+          transition: "transform 0.3s ease, box-shadow 0.3s ease",
+          "&:hover": {
+            transform: "translateY(-8px)",
+            boxShadow: "0 12px 24px rgba(0,0,0,0.12)"
+          }
+        }
+      }
+    },
+    MuiContainer: {
+      styleOverrides: { root: { paddingTop: "2rem", paddingBottom: "2rem" } }
+    }
+  }
+});
+const OnaiMascot = "/assets/onai_mascot-DZgRZoSx.png";
+const TEXT_CONTENT_LANDING_PAGE = {
+  hero: {
+    onaiGreeting: "Hi! I'm Onai, and I'll be your piano buddy! 🎹✨",
+    welcomePhrases: [
+      "Hi! I'm Onai, and I'll be your piano buddy! Ready to start your musical journey? 🎹✨",
+      "Want to learn your first song today? I can help! 🎵",
+      "Practice makes perfect, and I'll be here every step of the way! 🎹"
+    ]
+  },
+  featured: {
+    title: "Featured Stories",
+    stories: [
+      {
+        title: '"I Learned My First Song in Just 3 Days!"',
+        description: "A journey from complete beginner to playing your favorite tune",
+        tag: "Success Story"
+      },
+      {
+        title: "Master These 3 Basic Chords Today",
+        description: "The foundation of countless popular songs at your fingertips",
+        tag: "Quick Tips"
+      },
+      {
+        title: "15 Minutes a Day Challenge",
+        description: "How small practice sessions led to big results",
+        tag: "Challenge"
+      }
+    ]
+  },
+  tips: {
+    title: "Piano Tips",
+    items: [
+      {
+        title: "Finger Positioning 101",
+        description: "Master the basics of hand placement for better control"
+      },
+      {
+        title: "Reading Sheet Music Made Easy",
+        description: "Simple tricks to understand musical notation"
+      },
+      {
+        title: "Practice Routines for Beginners",
+        description: "Structure your learning for maximum progress"
+      }
+    ]
+  },
+  community: {
+    title: "Join Our Community",
+    stats: [
+      {
+        value: "10,000+",
+        label: "Active Learners"
+      },
+      {
+        value: "500+",
+        label: "Lessons"
+      },
+      {
+        value: "1,000+",
+        label: "Success Stories"
+      }
+    ]
+  },
+  features: {
+    title: "Why Learn with OnaiPiano?",
+    items: [
+      {
+        title: "Personalized Learning",
+        description: "Adaptive lessons that grow with you"
+      },
+      {
+        title: "Effective Practice",
+        description: "Structured practice sessions for maximum progress"
+      },
+      {
+        title: "Supportive Community",
+        description: "Connect with fellow learners and get support"
+      }
+    ]
+  },
+  footer: {
+    tagline: "Making piano learning accessible to everyone",
+    links: ["Featured", "Stories", "Tips & Tricks", "Community"],
+    copyright: `© ${(/* @__PURE__ */ new Date()).getFullYear()} OnaiPiano. All rights reserved.`
+  }
+};
+function Hero() {
+  const { welcomePhrases } = TEXT_CONTENT_LANDING_PAGE.hero;
+  const [index2, setIndex] = useState(0);
+  const theme2 = useTheme();
+  const isMobile = useMediaQuery(theme2.breakpoints.down("sm"));
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setIndex((i) => (i + 1) % welcomePhrases.length);
+    }, 3e3);
+    return () => clearInterval(timer);
+  }, [welcomePhrases.length]);
+  return /* @__PURE__ */ jsxs(
+    Box,
+    {
+      sx: {
+        display: "flex",
+        alignItems: "center",
+        gap: "1.5rem",
+        mx: "2.5rem",
+        animation: "slideIn 0.5s ease-out",
+        justifyContent: "center",
+        flexWrap: isMobile ? "wrap" : "nowrap"
+      },
+      children: [
+        /* @__PURE__ */ jsx(
+          Box,
+          {
+            component: "img",
+            src: OnaiMascot,
+            alt: "Onai Mascot",
+            sx: { height: "140px", position: "relative" }
+          }
+        ),
+        /* @__PURE__ */ jsx(
+          Box,
+          {
+            sx: {
+              background: "#fff",
+              color: theme2.palette.text.primary,
+              p: "1.5rem",
+              borderRadius: "20px",
+              position: "relative",
+              maxWidth: "350px",
+              boxShadow: "0 4px 12px rgba(0,0,0,0.05)",
+              "&::before": {
+                content: "''",
+                position: "absolute",
+                left: "-12px",
+                top: "50%",
+                transform: "translateY(-50%)",
+                borderTop: "12px solid transparent",
+                borderBottom: "12px solid transparent",
+                borderRight: "12px solid #fff"
+              }
+            },
+            children: /* @__PURE__ */ jsx(Typography, { variant: "body1", sx: { fontSize: "1.1rem" }, children: welcomePhrases[index2] })
+          }
+        )
+      ]
+    }
+  );
+}
+function FeaturedPage() {
+  const { title, stories } = TEXT_CONTENT_LANDING_PAGE.featured;
+  return /* @__PURE__ */ jsx(ThemeProvider$1, { theme: landingPageTheme, children: /* @__PURE__ */ jsxs(Container, { maxWidth: "lg", sx: { py: 2 }, children: [
+    /* @__PURE__ */ jsx(
+      Typography,
+      {
+        variant: "h2",
+        align: "center",
+        sx: {
+          mb: 5,
+          color: landingPageTheme.palette.primary.main,
+          fontWeight: 600
+        },
+        children: title
+      }
+    ),
+    /* @__PURE__ */ jsx(Grid, { container: true, spacing: 6, children: stories.map((story, idx) => /* @__PURE__ */ jsx(Grid, { item: true, xs: 12, md: 6, children: /* @__PURE__ */ jsx(Card, { children: /* @__PURE__ */ jsxs(CardContent, { sx: { p: "2rem" }, children: [
+      /* @__PURE__ */ jsx(
+        Typography,
+        {
+          variant: "h5",
+          component: "h2",
+          gutterBottom: true,
+          sx: { fontWeight: 600, mb: 2 },
+          children: story.title
+        }
+      ),
+      /* @__PURE__ */ jsx(
+        Typography,
+        {
+          variant: "body1",
+          component: "h3",
+          color: "text.secondary",
+          sx: { mb: 2 },
+          children: story.description
+        }
+      )
+    ] }) }) }, idx)) })
+  ] }) });
+}
+function TipsPage() {
+  const { title, items } = TEXT_CONTENT_LANDING_PAGE.tips;
+  return /* @__PURE__ */ jsx(ThemeProvider$1, { theme: landingPageTheme, children: /* @__PURE__ */ jsxs(Container, { maxWidth: "lg", sx: { py: 2 }, children: [
+    /* @__PURE__ */ jsx(
+      Typography,
+      {
+        variant: "h2",
+        align: "center",
+        sx: {
+          mb: 5,
+          color: landingPageTheme.palette.primary.main,
+          fontWeight: 600
+        },
+        children: title
+      }
+    ),
+    /* @__PURE__ */ jsx(Grid, { container: true, spacing: 6, children: items.map((tip, idx) => /* @__PURE__ */ jsx(Grid, { item: true, xs: 12, md: 6, children: /* @__PURE__ */ jsx(Card, { children: /* @__PURE__ */ jsxs(CardContent, { sx: { p: "2rem" }, children: [
+      /* @__PURE__ */ jsx(
+        Typography,
+        {
+          variant: "h5",
+          component: "h2",
+          gutterBottom: true,
+          sx: { fontWeight: 600, mb: 2 },
+          children: tip.title
+        }
+      ),
+      /* @__PURE__ */ jsx(
+        Typography,
+        {
+          variant: "body1",
+          component: "h3",
+          color: "text.secondary",
+          children: tip.description
+        }
+      )
+    ] }) }) }, idx)) })
+  ] }) });
+}
+function LandingPage() {
+  return /* @__PURE__ */ jsx(ThemeProvider$1, { theme: landingPageTheme, children: /* @__PURE__ */ jsxs(
+    Box,
+    {
+      sx: {
+        overflowX: "hidden",
+        overflowY: "auto",
+        height: "100vh",
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        gap: 4
+      },
+      children: [
+        /* @__PURE__ */ jsx(
+          Box,
+          {
+            component: "img",
+            src: Logo,
+            alt: "OnaiPiano Logo",
+            sx: {
+              width: { xs: "120px", sm: "160px", md: "220px" }
+            }
+          }
+        ),
+        /* @__PURE__ */ jsx(Hero, {}),
+        /* @__PURE__ */ jsx(Button, { href: "/onboarding", variant: "contained", children: "Start your Piano Journey" }),
+        /* @__PURE__ */ jsx(FeaturedPage, {}),
+        /* @__PURE__ */ jsx(TipsPage, {})
+      ]
+    }
+  ) });
+}
+lazy(() => import("./Home-C7vltTwd.js"));
+const TrainPiano = lazy(() => import("./TrainPiano-DwCE6NtA.js"));
+const OnboardingPage = lazy(() => import("./OnBoarding-CZEjgUC5.js"));
 const AdvicePage = lazy(() => import("./AdvicePage-GELi558g.js"));
-const TutorialPage = lazy(() => import("./TutorialPage-AcpgWSIE.js"));
+const TutorialPage = lazy(() => import("./TutorialPage-Cbteg9oK.js"));
 const theme = createTheme$1({
   palette: {
     primary: { main: "#1a5da6" },
@@ -1543,17 +1867,20 @@ const theme = createTheme$1({
 const Router = ({ isMobile }) => {
   if (isMobile) {
     return /* @__PURE__ */ jsx(Suspense, { fallback: /* @__PURE__ */ jsx("div", { children: "Loading..." }), children: /* @__PURE__ */ jsx(ThemeProvider$1, { theme, children: /* @__PURE__ */ jsx(UserProvider, { children: /* @__PURE__ */ jsxs(Routes, { children: [
-      /* @__PURE__ */ jsx(Route, { path: "/", element: /* @__PURE__ */ jsx(OnboardingPage, {}) }),
+      /* @__PURE__ */ jsx(Route, { path: "/onboarding", element: /* @__PURE__ */ jsx(OnboardingPage, {}) }),
       /* @__PURE__ */ jsx(Route, { path: "/home", element: /* @__PURE__ */ jsx(HomeSpace, {}) }),
       /* @__PURE__ */ jsx(Route, { path: "/advice", element: /* @__PURE__ */ jsx(AdvicePage, { isMobile: true }) }),
       /* @__PURE__ */ jsx(Route, { path: "/tutorial", element: /* @__PURE__ */ jsx(TutorialPage, { isMobile: true }) }),
       /* @__PURE__ */ jsx(Route, { path: "/contact", element: /* @__PURE__ */ jsx(InformationPage, {}) }),
       /* @__PURE__ */ jsx(Route, { path: "/dailychallenge", element: /* @__PURE__ */ jsx(PianoMasteryChallenge, {}) }),
-      /* @__PURE__ */ jsx(Route, { path: "/learnsong", element: /* @__PURE__ */ jsx(SongLearningPage, {}) })
+      /* @__PURE__ */ jsx(Route, { path: "/learnsong", element: /* @__PURE__ */ jsx(SongLearningPage, {}) }),
+      /* @__PURE__ */ jsx(Route, { path: "/", element: /* @__PURE__ */ jsx(LandingPage, {}) }),
+      /* @__PURE__ */ jsx(Route, { path: "/featured", element: /* @__PURE__ */ jsx(FeaturedPage, {}) }),
+      /* @__PURE__ */ jsx(Route, { path: "/tips", element: /* @__PURE__ */ jsx(TipsPage, {}) })
     ] }) }) }) });
   }
   return /* @__PURE__ */ jsx(Suspense, { fallback: /* @__PURE__ */ jsx("div", { children: "Loading..." }), children: /* @__PURE__ */ jsx(ThemeProvider$1, { theme, children: /* @__PURE__ */ jsx(UserProvider, { children: /* @__PURE__ */ jsxs(Routes, { children: [
-    /* @__PURE__ */ jsx(Route, { path: "/", element: /* @__PURE__ */ jsx(OnboardingPage, {}) }),
+    /* @__PURE__ */ jsx(Route, { path: "/onboarding", element: /* @__PURE__ */ jsx(OnboardingPage, {}) }),
     /* @__PURE__ */ jsx(Route, { path: "/home", element: /* @__PURE__ */ jsx(HomeSpace, {}) }),
     /* @__PURE__ */ jsx(Route, { path: "/advice", element: /* @__PURE__ */ jsx(AdvicePage, { isMobile: false }) }),
     /* @__PURE__ */ jsx(
@@ -1563,10 +1890,13 @@ const Router = ({ isMobile }) => {
         element: /* @__PURE__ */ jsx(TutorialPage, { isMobile: false })
       }
     ),
+    /* @__PURE__ */ jsx(Route, { path: "/", element: /* @__PURE__ */ jsx(LandingPage, {}) }),
     /* @__PURE__ */ jsx(Route, { path: "/trainpiano", element: /* @__PURE__ */ jsx(TrainPiano, {}) }),
     /* @__PURE__ */ jsx(Route, { path: "/contact", element: /* @__PURE__ */ jsx(InformationPage, {}) }),
     /* @__PURE__ */ jsx(Route, { path: "/dailychallenge", element: /* @__PURE__ */ jsx(PianoMasteryChallenge, {}) }),
-    /* @__PURE__ */ jsx(Route, { path: "/learnsong", element: /* @__PURE__ */ jsx(SongLearningPage, {}) })
+    /* @__PURE__ */ jsx(Route, { path: "/learnsong", element: /* @__PURE__ */ jsx(SongLearningPage, {}) }),
+    /* @__PURE__ */ jsx(Route, { path: "/featured", element: /* @__PURE__ */ jsx(FeaturedPage, {}) }),
+    /* @__PURE__ */ jsx(Route, { path: "/tips", element: /* @__PURE__ */ jsx(TipsPage, {}) })
   ] }) }) }) });
 };
 const index = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({

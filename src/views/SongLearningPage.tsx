@@ -184,7 +184,6 @@ const SongLearningPage: React.FC = () => {
         height: "100vh",
         overflowY: "auto",
         p: 2,
-        background: "#f5f5f5", // subtle background for contrast
       }}
     >
       <Box

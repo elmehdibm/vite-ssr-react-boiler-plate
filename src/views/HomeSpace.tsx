@@ -222,7 +222,7 @@ const HomeSpace = () => {
                 onClick={() => {
                   // Navigate to Blog page
                   toggleDrawer(false);
-                  navigate("/contact");
+                  navigate("/blog");
                 }}
               >
                 <ListItemText primary="Blog" />
@@ -233,7 +233,7 @@ const HomeSpace = () => {
 
         <MainContent isMobile={isMobile}>
           <Container>
-            {value === 0 && <MainViewSpace />}
+            {value === 0 && <MainViewSpace setValuePage={setValue} />}
             {value === 1 && (
               <InformationPage content="Connect with fellow piano enthusiasts who share your musical interests and goals." />
             )}

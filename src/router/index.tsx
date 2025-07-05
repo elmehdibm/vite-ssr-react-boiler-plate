@@ -7,6 +7,11 @@ import { UserProvider } from "../utils/UserProvider";
 import InformationPage from "../contents/InformationPage";
 import LearnSongPage from "../views/SongLearningPage";
 import SongLearningPage from "../views/SongLearningPage";
+import BlogPage from "../views/LandingPage";
+import LandingPage from "../views/LandingPage";
+import FeaturedPage from "../views/FeaturedPage";
+import Tips from "../contents/Tips";
+import TipsPage from "../views/TipsPage";
 
 const Home = lazy(() => import("../views/Home"));
 const TrainPiano = lazy(() => import("../views/TrainPiano"));
@@ -44,13 +49,16 @@ export const Router = ({ isMobile }: any) => {
             }
           />
           <Route path="/dailychallenge" element={<PianoNotesChallenge />} /> */}
-              <Route path="/" element={<OnboardingPage />} />
+              <Route path="/onboarding" element={<OnboardingPage />} />
               <Route path="/home" element={<HomeSpace />} />
               <Route path="/advice" element={<AdvicePage isMobile />} />
               <Route path="/tutorial" element={<TutorialPage isMobile />} />
               <Route path="/contact" element={<InformationPage />} />
               <Route path="/dailychallenge" element={<PianoNotesChallenge />} />
               <Route path="/learnsong" element={<SongLearningPage />} />
+              <Route path="/" element={<LandingPage />} />
+              <Route path="/featured" element={<FeaturedPage />} />
+              <Route path="/tips" element={<TipsPage />} />
             </Routes>
           </UserProvider>
         </ThemeProvider>
@@ -66,17 +74,20 @@ export const Router = ({ isMobile }: any) => {
             {/* <Route path="/" element={<Home />} />
         <Route path="/trainpiano" element={<TrainPiano />} />
         <Route path="/dailychallenge" element={<PianoNotesChallenge />} /> */}
-            <Route path="/" element={<OnboardingPage />} />
+            <Route path="/onboarding" element={<OnboardingPage />} />
             <Route path="/home" element={<HomeSpace />} />
             <Route path="/advice" element={<AdvicePage isMobile={false} />} />
             <Route
               path="/tutorial"
               element={<TutorialPage isMobile={false} />}
             />
+            <Route path="/" element={<LandingPage />} />
             <Route path="/trainpiano" element={<TrainPiano />} />
             <Route path="/contact" element={<InformationPage />} />
             <Route path="/dailychallenge" element={<PianoNotesChallenge />} />
             <Route path="/learnsong" element={<SongLearningPage />} />
+            <Route path="/featured" element={<FeaturedPage />} />
+            <Route path="/tips" element={<TipsPage />} />
           </Routes>
         </UserProvider>
       </ThemeProvider>

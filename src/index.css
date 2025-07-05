@@ -180,7 +180,7 @@ body.dark-mode {
 /* Styling texts everywhere */
 h1,
 h2 {
-  color: #007aff;
+  color: #1a5da6;
   transition: color 0.3s;
   margin: 0;
 }
@@ -197,7 +197,7 @@ p {
 }
 .dark-mode h1,
 .dark-mode h2 {
-  color: #60a5fa;
+  color: #1a5da6;
 }
 
 .dark-mode p {

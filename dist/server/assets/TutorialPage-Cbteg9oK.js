@@ -521,6 +521,5 @@ function TutorialPage({ isMobile }) {
   );
 }
 export {
-  TUTORIAL_CONTENT,
   TutorialPage as default
 };
