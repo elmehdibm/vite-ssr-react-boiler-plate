@@ -8,22 +8,22 @@ export const TEXT_CONTENT_LANDING_PAGE = {
     ],
   },
   featured: {
-    title: "Featured Stories",
+    title: "Stories",
     stories: [
       {
-        title: '"I Learned My First Song in Just 3 Days!"',
+        title: 'I Learned My First Song in Just 3 Days!',
         description:
           "A journey from complete beginner to playing your favorite tune",
         tag: "Success Story",
       },
       {
-        title: "Master These 3 Basic Chords Today",
+        title: "I was able to play 3 Basic Chords Today",
         description:
           "The foundation of countless popular songs at your fingertips",
-        tag: "Quick Tips",
+        tag: "Chords",
       },
       {
-        title: "15 Minutes a Day Challenge",
+        title: "I spent 15 Minutes a Day doing Challenges",
         description: "How small practice sessions led to big results",
         tag: "Challenge",
       },

@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   Box,
@@ -10,6 +10,7 @@ import {
 } from "@mui/material";
 import Logo from "../assets/logo.png";
 import { useUser } from "../utils/UserProvider";
+import { isEmailValidRFC822 } from "../utils";
 
 const OnboardingContainer = styled(Box)(({ theme }) => ({
   display: "flex",
@@ -101,19 +102,24 @@ const journeyLevels = [
 export default function OnboardingPage() {
   const { updateProfileName } = useUser();
   const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
   const [selectedLevel, setSelectedLevel] = useState("");
   const navigate = useNavigate();
 
   useEffect(() => {
     const savedName = localStorage.getItem("userName");
+    const savedEmail = localStorage.getItem("userEmail");
     if (savedName) setName(savedName);
+    if (savedEmail) setEmail(savedEmail);
   }, []);
 
   const handleLevelSelect = (level: string) => {
     setSelectedLevel(level);
     updateProfileName(name);
-    navigate(level === "New to piano" ? "/advice" : "/tutorial");
+    navigate("/home");
   };
+
+  const canSelectLevel = useMemo(() => name.length >= 2, [name, email]);
 
   return (
     <OnboardingContainer>
@@ -136,8 +142,32 @@ export default function OnboardingPage() {
           width: { xs: "90%", sm: "80%" },
           mb: 4,
         }}
-        inputProps={{ "aria-label": "Enter your name" }}
       />
+
+      <StyledTextField
+        placeholder="adresse@gmail.com"
+        variant="outlined"
+        value={email}
+        type="email"
+        label="Your email address"
+        onChange={(e) => setEmail(e.target.value)}
+        sx={{
+          width: { xs: "90%", sm: "80%" },
+        }}
+      />
+      <Typography
+        variant="body2"
+        sx={{
+          color: "grey",
+          fontSize: {
+            xs: "0.9rem",
+            sm: "1rem",
+            marginBottom: 16,
+          },
+        }}
+      >
+        To keep you updated on your progress and send you personalized tips
+      </Typography>
 
       <Typography
         variant="h5"
@@ -168,7 +198,7 @@ export default function OnboardingPage() {
             variant="contained"
             selected={selectedLevel === journey.level}
             onClick={() => handleLevelSelect(journey.level)}
-            disabled={name.length < 3}
+            disabled={!canSelectLevel}
             aria-label={`Select ${journey.level} level`}
           >
             <Typography
@@ -198,20 +228,6 @@ export default function OnboardingPage() {
           </JourneyButton>
         ))}
       </Stack>
-
-      {name.length < 3 && (
-        <Typography
-          variant="body2"
-          sx={{
-            mt: 2,
-            color: "#1a5da6",
-            opacity: 0.8,
-            fontStyle: "italic",
-          }}
-        >
-          Share your name to begin your musical journey
-        </Typography>
-      )}
     </OnboardingContainer>
   );
 }

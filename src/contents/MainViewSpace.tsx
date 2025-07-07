@@ -92,7 +92,7 @@ const StyledActionButtonPrimary = styled(Button)(({ theme }) => ({
 // Helper function to get a date string in YYYY-MM-DD format
 const getDateString = (date: Date): string => date.toISOString().split("T")[0];
 
-const MainViewSpace = ({ setValuePage }) => {
+const MainViewSpace = () => {
   const navigate = useNavigate();
   const { user, chartData, chartOptions, challengeLevels } = useUser();
 
@@ -297,10 +297,7 @@ const MainViewSpace = ({ setValuePage }) => {
                 >
                   {todaysChallenge ? "Continue Practice" : "Start Practice"}
                 </StyledActionButtonPrimary>
-                <StyledActionButtonPrimary
-                  onClick={() => setValuePage(3)}
-                  sx={{ mt: 2 }}
-                >
+                <StyledActionButtonPrimary sx={{ mt: 2 }} onClick={() => navigate("/home/explore")}>
                   {"Discover Challenges"}
                 </StyledActionButtonPrimary>
               </Box>

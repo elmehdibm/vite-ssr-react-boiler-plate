@@ -5,15 +5,14 @@ import { createTheme, ThemeProvider } from "@mui/material";
 import HomeSpace from "../views/HomeSpace";
 import { UserProvider } from "../utils/UserProvider";
 import InformationPage from "../contents/InformationPage";
-import LearnSongPage from "../views/SongLearningPage";
 import SongLearningPage from "../views/SongLearningPage";
-import BlogPage from "../views/LandingPage";
 import LandingPage from "../views/LandingPage";
 import FeaturedPage from "../views/FeaturedPage";
-import Tips from "../contents/Tips";
 import TipsPage from "../views/TipsPage";
+import MainViewSpace from "../contents/MainViewSpace";
+import DiscoverChallenges from "../views/DiscoverChallenges";
 
-const Home = lazy(() => import("../views/Home"));
+const Home = lazy(() => import("../views/archive/Home"));
 const TrainPiano = lazy(() => import("../views/TrainPiano"));
 const OnboardingPage = lazy(() => import("../views/OnBoarding"));
 const AdvicePage = lazy(() => import("../views/AdvicePage"));
@@ -35,53 +34,37 @@ const theme = createTheme({
 });
 
 export const Router = ({ isMobile }: any) => {
-  if (isMobile) {
-    return (
-      <Suspense fallback={<div>Loading...</div>}>
-        <ThemeProvider theme={theme}>
-          <UserProvider>
-            <Routes>
-              {/* <Route path="/" element={<Home />} />
-          <Route
-            path="/trainpiano"
-            element={
-              <div>Not Supported Now - Please check the app in Desktop</div>
-            }
-          />
-          <Route path="/dailychallenge" element={<PianoNotesChallenge />} /> */}
-              <Route path="/onboarding" element={<OnboardingPage />} />
-              <Route path="/home" element={<HomeSpace />} />
-              <Route path="/advice" element={<AdvicePage isMobile />} />
-              <Route path="/tutorial" element={<TutorialPage isMobile />} />
-              <Route path="/contact" element={<InformationPage />} />
-              <Route path="/dailychallenge" element={<PianoNotesChallenge />} />
-              <Route path="/learnsong" element={<SongLearningPage />} />
-              <Route path="/" element={<LandingPage />} />
-              <Route path="/featured" element={<FeaturedPage />} />
-              <Route path="/tips" element={<TipsPage />} />
-            </Routes>
-          </UserProvider>
-        </ThemeProvider>
-      </Suspense>
-    );
-  }
-
   return (
     <Suspense fallback={<div>Loading...</div>}>
       <ThemeProvider theme={theme}>
         <UserProvider>
           <Routes>
-            {/* <Route path="/" element={<Home />} />
-        <Route path="/trainpiano" element={<TrainPiano />} />
-        <Route path="/dailychallenge" element={<PianoNotesChallenge />} /> */}
+            <Route path="/" element={<LandingPage />} />
             <Route path="/onboarding" element={<OnboardingPage />} />
-            <Route path="/home" element={<HomeSpace />} />
-            <Route path="/advice" element={<AdvicePage isMobile={false} />} />
+            <Route path="/home" element={<HomeSpace />}>
+              <Route path="" element={<MainViewSpace />} />
+              <Route
+                path="community"
+                element={
+                  <InformationPage content="Connect with fellow piano enthusiasts who share your musical interests and goals." />
+                }
+              />
+              <Route
+                path="timeline"
+                element={
+                  <InformationPage content="Through analyzing your style and goals, we create a personalized timeline that evolves with you." />
+                }
+              />
+              <Route path="explore" element={<DiscoverChallenges />} />
+            </Route>
+            <Route
+              path="/advice"
+              element={<AdvicePage isMobile={isMobile} />}
+            />
             <Route
               path="/tutorial"
-              element={<TutorialPage isMobile={false} />}
+              element={<TutorialPage isMobile={isMobile} />}
             />
-            <Route path="/" element={<LandingPage />} />
             <Route path="/trainpiano" element={<TrainPiano />} />
             <Route path="/contact" element={<InformationPage />} />
             <Route path="/dailychallenge" element={<PianoNotesChallenge />} />

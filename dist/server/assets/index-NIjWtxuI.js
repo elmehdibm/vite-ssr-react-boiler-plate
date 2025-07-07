@@ -79,7 +79,7 @@ const UserProvider = ({ children }) => {
   useEffect(() => {
     localStorage.setItem("user-onaipiano", JSON.stringify(user));
   }, [user]);
-  const updateProfileName = (newName) => {
+  const updateProfileData = (newName) => {
     setUser((prev) => ({ ...prev, name: newName }));
   };
   const addChallenge = (challenge) => {
@@ -164,7 +164,7 @@ const UserProvider = ({ children }) => {
     {
       value: {
         user,
-        updateProfileName,
+        updateProfileData,
         addChallenge,
         updateTimeSpent,
         updateCurrentLevel,

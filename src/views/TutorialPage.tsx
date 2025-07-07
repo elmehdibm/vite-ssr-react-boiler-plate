@@ -6,10 +6,7 @@ import {
   Button,
   Grid,
   IconButton,
-  List,
-  ListItem,
   useTheme,
-  useMediaQuery,
 } from "@mui/material";
 import {
   MusicNote,
@@ -269,26 +266,28 @@ function TutorialPage({ isMobile }: { isMobile: boolean }) {
         </Typography>
       </Box>
       <Grid container spacing={1}>
-        {Object.keys(TUTORIAL_CONTENT.passion.sections).map((key: string, index) => (
-          <Grid item xs={12} sm={6} key={index}>
-            <Box
-              sx={{
-                p: 1,
-                bgcolor: theme.palette.grey[100],
-                textAlign: "center",
-              }}
-            >
-              <Typography sx={typographyStyles.passion.sectionTitle}>
-                {TUTORIAL_CONTENT.passion.sections[key].title}
-              </Typography>
-              <Typography
-                sx={{ ...typographyStyles.passion.sectionDescription, mt: 1 }}
+        {Object.keys(TUTORIAL_CONTENT.passion.sections).map(
+          (key: string, index) => (
+            <Grid item xs={12} sm={6} key={index}>
+              <Box
+                sx={{
+                  p: 1,
+                  bgcolor: theme.palette.grey[100],
+                  textAlign: "center",
+                }}
               >
-                {TUTORIAL_CONTENT.passion.sections[key].description}
-              </Typography>
-            </Box>
-          </Grid>
-        ))}
+                <Typography sx={typographyStyles.passion.sectionTitle}>
+                  {TUTORIAL_CONTENT.passion.sections[key].title}
+                </Typography>
+                <Typography
+                  sx={{ ...typographyStyles.passion.sectionDescription, mt: 1 }}
+                >
+                  {TUTORIAL_CONTENT.passion.sections[key].description}
+                </Typography>
+              </Box>
+            </Grid>
+          )
+        )}
       </Grid>
       {/* <Button
         variant="contained"

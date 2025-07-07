@@ -24,11 +24,9 @@ import {
   Explore as ExploreIcon,
 } from "@mui/icons-material";
 import Logo from "../assets/logo.png";
-import MainViewSpace from "../contents/MainViewSpace";
 import { useUser } from "../utils/UserProvider";
 import CloseIcon from "@mui/icons-material/Close";
-import InformationPage from "../contents/InformationPage";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Outlet, useLocation } from "react-router-dom";
 
 // Define a custom theme
 const theme = createTheme({
@@ -58,7 +56,7 @@ const theme = createTheme({
 // Filter out isMobile from being passed to DOM by using shouldForwardProp.
 const MainContent = styled(Box, {
   shouldForwardProp: (prop) => prop !== "isMobile",
-})(({ theme, isMobile }: { theme: any; isMobile: boolean }) => ({
+})(({ isMobile }: { isMobile: boolean }) => ({
   flexGrow: 1,
   overflowY: "auto",
   overflowX: "hidden",
@@ -109,8 +107,8 @@ const StyledBottomNavigationAction = styled(BottomNavigationAction)(
 );
 
 const HomeSpace = () => {
-  const [value, setValue] = useState(0);
   const navigate = useNavigate();
+  const location = useLocation();
   const { user } = useUser();
   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
   const [drawerOpen, setDrawerOpen] = useState(false);
@@ -202,16 +200,14 @@ const HomeSpace = () => {
             <List>
               <ListItemButton
                 onClick={() => {
-                  // Navigate to Edit Profile page
                   toggleDrawer(false);
-                  navigate("/contact");
+                  navigate("/edit-profile");
                 }}
               >
                 <ListItemText primary="Edit Profile" />
               </ListItemButton>
               <ListItemButton
                 onClick={() => {
-                  // Navigate to Contact page
                   toggleDrawer(false);
                   navigate("/contact");
                 }}
@@ -220,7 +216,6 @@ const HomeSpace = () => {
               </ListItemButton>
               <ListItemButton
                 onClick={() => {
-                  // Navigate to Blog page
                   toggleDrawer(false);
                   navigate("/blog");
                 }}
@@ -233,25 +228,11 @@ const HomeSpace = () => {
 
         <MainContent isMobile={isMobile}>
           <Container>
-            {value === 0 && <MainViewSpace setValuePage={setValue} />}
-            {value === 1 && (
-              <InformationPage content="Connect with fellow piano enthusiasts who share your musical interests and goals." />
-            )}
-            {value === 2 && (
-              <InformationPage content="Through analyzing your style and goals, we create a personalized timeline that evolves with you." />
-            )}
-            {value === 3 && (
-              <InformationPage content="Music is about emotion - we help you connect with every piece you play." />
-            )}
+            <Outlet />
           </Container>
         </MainContent>
 
         <StyledBottomNavigation
-          value={value}
-          onChange={(_, newValue) => {
-            console.log(newValue);
-            setValue(newValue);
-          }}
           showLabels
           sx={{
             gap: isMobile ? 0 : 12,
@@ -260,18 +241,49 @@ const HomeSpace = () => {
             },
           }}
         >
-          <StyledBottomNavigationAction label="Home" icon={<HomeIcon />} />
+          <StyledBottomNavigationAction
+            label="Home"
+            icon={<HomeIcon />}
+            sx={{
+              backgroundColor:
+                location.pathname === "/home"
+                  ? theme.palette.primary.light
+                  : "transparent",
+            }}
+            onClick={() => navigate("/home")}
+          />
           <StyledBottomNavigationAction
             label="Community"
             icon={<PeopleIcon />}
+            sx={{
+              backgroundColor:
+                location.pathname === "/home/community"
+                  ? theme.palette.primary.light
+                  : "transparent",
+            }}
+            onClick={() => navigate("/home/community")}
           />
           <StyledBottomNavigationAction
             label="Timeline"
             icon={<TimelineIcon />}
+            sx={{
+              backgroundColor:
+                location.pathname === "/home/timeline"
+                  ? theme.palette.primary.light
+                  : "transparent",
+            }}
+            onClick={() => navigate("/home/timeline")}
           />
           <StyledBottomNavigationAction
             label="Explore"
             icon={<ExploreIcon />}
+            sx={{
+              backgroundColor:
+                location.pathname === "/home/explore"
+                  ? theme.palette.primary.light
+                  : "transparent",
+            }}
+            onClick={() => navigate("/home/explore")}
           />
         </StyledBottomNavigation>
       </Box>

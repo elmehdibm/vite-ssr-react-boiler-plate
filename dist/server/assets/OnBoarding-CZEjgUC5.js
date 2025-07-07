@@ -101,7 +101,7 @@ const journeyLevels = [
   }
 ];
 function OnboardingPage() {
-  const { updateProfileName } = useUser();
+  const { updateProfileData } = useUser();
   const [name, setName] = useState("");
   const [selectedLevel, setSelectedLevel] = useState("");
   const navigate = useNavigate();
@@ -111,7 +111,7 @@ function OnboardingPage() {
   }, []);
   const handleLevelSelect = (level) => {
     setSelectedLevel(level);
-    updateProfileName(name);
+    updateProfileData(name);
     navigate(level === "New to piano" ? "/advice" : "/tutorial");
   };
   return /* @__PURE__ */ jsxs(OnboardingContainer, { children: [
