@@ -1,5 +1,4 @@
 import { jsxs, jsx } from "react/jsx-runtime";
-/* empty css               */
 const Home = () => {
   return /* @__PURE__ */ jsxs("div", { style: { overflow: "auto", height: "100vh" }, children: [
     /* @__PURE__ */ jsxs("div", { className: "title-container", children: [

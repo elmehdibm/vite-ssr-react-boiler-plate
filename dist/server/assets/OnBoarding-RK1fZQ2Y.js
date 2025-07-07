@@ -1,14 +1,15 @@
 import { jsxs, jsx } from "react/jsx-runtime";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { Box, Typography, Stack, styled, TextField, Button } from "@mui/material";
-import { u as useUser, L as Logo } from "./index-NIjWtxuI.js";
+import { u as useUser, L as Logo } from "./index-B9pnqnpq.js";
 import "vexflow";
 import "react-piano";
 import "@mui/icons-material/History";
 import "@mui/icons-material/Close";
 import "@mui/material/styles/index.js";
 import "@mui/icons-material";
+import "react-calendly";
 import "@mui/system";
 import "react-chartjs-2";
 import "@mui/icons-material/LibraryBooks";
@@ -18,7 +19,10 @@ import "@mui/icons-material/MusicNote";
 import "@mui/icons-material/Instagram";
 import "@mui/icons-material/Facebook";
 import "chart.js";
-import "react-calendly";
+import "@mui/icons-material/ExpandMore";
+import "@mui/icons-material/Info";
+import "@mui/icons-material/Feedback";
+import "@mui/icons-material/Explore";
 const OnboardingContainer = styled(Box)(({ theme }) => ({
   display: "flex",
   flexDirection: "column",
@@ -101,19 +105,23 @@ const journeyLevels = [
   }
 ];
 function OnboardingPage() {
-  const { updateProfileData } = useUser();
+  const { updateProfileName } = useUser();
   const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
   const [selectedLevel, setSelectedLevel] = useState("");
   const navigate = useNavigate();
   useEffect(() => {
     const savedName = localStorage.getItem("userName");
+    const savedEmail = localStorage.getItem("userEmail");
     if (savedName) setName(savedName);
+    if (savedEmail) setEmail(savedEmail);
   }, []);
   const handleLevelSelect = (level) => {
     setSelectedLevel(level);
-    updateProfileData(name);
-    navigate(level === "New to piano" ? "/advice" : "/tutorial");
+    updateProfileName(name);
+    navigate("/home");
   };
+  const canSelectLevel = useMemo(() => name.length >= 2, [name, email]);
   return /* @__PURE__ */ jsxs(OnboardingContainer, { children: [
     /* @__PURE__ */ jsx(
       Box,
@@ -137,8 +145,36 @@ function OnboardingPage() {
         sx: {
           width: { xs: "90%", sm: "80%" },
           mb: 4
+        }
+      }
+    ),
+    /* @__PURE__ */ jsx(
+      StyledTextField,
+      {
+        placeholder: "adresse@gmail.com",
+        variant: "outlined",
+        value: email,
+        type: "email",
+        label: "Your email address",
+        onChange: (e) => setEmail(e.target.value),
+        sx: {
+          width: { xs: "90%", sm: "80%" }
+        }
+      }
+    ),
+    /* @__PURE__ */ jsx(
+      Typography,
+      {
+        variant: "body2",
+        sx: {
+          color: "grey",
+          fontSize: {
+            xs: "0.9rem",
+            sm: "1rem",
+            marginBottom: 16
+          }
         },
-        inputProps: { "aria-label": "Enter your name" }
+        children: "To keep you updated on your progress and send you personalized tips"
       }
     ),
     /* @__PURE__ */ jsx(
@@ -172,7 +208,7 @@ function OnboardingPage() {
             variant: "contained",
             selected: selectedLevel === journey.level,
             onClick: () => handleLevelSelect(journey.level),
-            disabled: name.length < 3,
+            disabled: !canSelectLevel,
             "aria-label": `Select ${journey.level} level`,
             children: [
               /* @__PURE__ */ jsx(
@@ -207,19 +243,6 @@ function OnboardingPage() {
           },
           journey.level
         ))
-      }
-    ),
-    name.length < 3 && /* @__PURE__ */ jsx(
-      Typography,
-      {
-        variant: "body2",
-        sx: {
-          mt: 2,
-          color: "#1a5da6",
-          opacity: 0.8,
-          fontStyle: "italic"
-        },
-        children: "Share your name to begin your musical journey"
       }
     )
   ] });

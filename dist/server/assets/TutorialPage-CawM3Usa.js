@@ -353,26 +353,28 @@ function TutorialPage({ isMobile }) {
       /* @__PURE__ */ jsx(Typography, { sx: typographyStyles.passion.title, children: TUTORIAL_CONTENT.passion.title }),
       /* @__PURE__ */ jsx(Typography, { sx: { ...typographyStyles.passion.description, mt: 1 }, children: TUTORIAL_CONTENT.passion.description })
     ] }),
-    /* @__PURE__ */ jsx(Grid, { container: true, spacing: 1, children: Object.keys(TUTORIAL_CONTENT.passion.sections).map((key, index) => /* @__PURE__ */ jsx(Grid, { item: true, xs: 12, sm: 6, children: /* @__PURE__ */ jsxs(
-      Box,
-      {
-        sx: {
-          p: 1,
-          bgcolor: theme.palette.grey[100],
-          textAlign: "center"
-        },
-        children: [
-          /* @__PURE__ */ jsx(Typography, { sx: typographyStyles.passion.sectionTitle, children: TUTORIAL_CONTENT.passion.sections[key].title }),
-          /* @__PURE__ */ jsx(
-            Typography,
-            {
-              sx: { ...typographyStyles.passion.sectionDescription, mt: 1 },
-              children: TUTORIAL_CONTENT.passion.sections[key].description
-            }
-          )
-        ]
-      }
-    ) }, index)) })
+    /* @__PURE__ */ jsx(Grid, { container: true, spacing: 1, children: Object.keys(TUTORIAL_CONTENT.passion.sections).map(
+      (key, index) => /* @__PURE__ */ jsx(Grid, { item: true, xs: 12, sm: 6, children: /* @__PURE__ */ jsxs(
+        Box,
+        {
+          sx: {
+            p: 1,
+            bgcolor: theme.palette.grey[100],
+            textAlign: "center"
+          },
+          children: [
+            /* @__PURE__ */ jsx(Typography, { sx: typographyStyles.passion.sectionTitle, children: TUTORIAL_CONTENT.passion.sections[key].title }),
+            /* @__PURE__ */ jsx(
+              Typography,
+              {
+                sx: { ...typographyStyles.passion.sectionDescription, mt: 1 },
+                children: TUTORIAL_CONTENT.passion.sections[key].description
+              }
+            )
+          ]
+        }
+      ) }, index)
+    ) })
   ] });
   const renderPersonalizedPathSlide = () => /* @__PURE__ */ jsxs(SlideWrapper, { children: [
     /* @__PURE__ */ jsxs(Box, { sx: { mb: 2 }, children: [

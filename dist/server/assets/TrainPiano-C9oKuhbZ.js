@@ -3,7 +3,6 @@ import React__default, { useState, useMemo, useCallback } from "react";
 import { useSpring, animated } from "@react-spring/web";
 import { AwesomeButton } from "react-awesome-button";
 import Select from "react-select";
-/* empty css               */
 const letters = [
   "C",
   "c#",
