@@ -8,7 +8,6 @@ export const landingPageTheme = createTheme({
       dark: "#3A72B4",
     },
     secondary: { main: "#1a5da6" },
-    accent: { main: "#FF6B6B" },
     background: { default: "#f5f7fa", paper: "#ffffff" },
     text: { primary: "#1a5da6" },
   },

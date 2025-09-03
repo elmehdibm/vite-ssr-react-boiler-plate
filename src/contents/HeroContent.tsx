@@ -1,21 +1,14 @@
-import { useEffect, useState } from "react";
-import { Box, Typography, useTheme, useMediaQuery } from "@mui/material";
+import { Box, useTheme, useMediaQuery } from "@mui/material";
 import OnaiMascot from "../assets/onai_mascot.png";
-import { TEXT_CONTENT_LANDING_PAGE } from "../data/landingPageConstants";
+import * as React from "react";
 
-export default function Hero() {
-  const { welcomePhrases } = TEXT_CONTENT_LANDING_PAGE.hero;
-  const [index, setIndex] = useState(0);
+export default function HeroContent({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
-
-  // Cycle messages every 3 seconds
-  useEffect(() => {
-    const timer = setInterval(() => {
-      setIndex((i) => (i + 1) % welcomePhrases.length);
-    }, 3000);
-    return () => clearInterval(timer);
-  }, [welcomePhrases.length]);
 
   return (
     <Box
@@ -56,9 +49,7 @@ export default function Hero() {
           },
         }}
       >
-        <Typography variant="body1" sx={{ fontSize: "1.1rem" }}>
-          {welcomePhrases[index]}
-        </Typography>
+        {children}
       </Box>
     </Box>
   );

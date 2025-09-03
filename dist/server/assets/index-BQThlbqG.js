@@ -2460,9 +2460,48 @@ function DiscoverChallenges() {
     /* @__PURE__ */ jsx(Box, { textAlign: "center", mt: 4, children: /* @__PURE__ */ jsx(Button, { startIcon: /* @__PURE__ */ jsx(FeedbackIcon, {}), variant: "outlined", color: "primary", children: "Send Feedback" }) })
   ] });
 }
+const ShareWhatsappImage = "/assets/sharewhatsapp-DqF_vyLm.png";
+function CommunityPage() {
+  return /* @__PURE__ */ jsx(Container, { maxWidth: "md", sx: { py: 8 }, children: /* @__PURE__ */ jsxs(Box, { textAlign: "center", children: [
+    /* @__PURE__ */ jsx(Typography, { variant: "h4", gutterBottom: true, children: "Join Our Piano Community" }),
+    /* @__PURE__ */ jsx(Typography, { variant: "body1", children: "Connect with fellow piano enthusiasts who share your musical interests and goals. Share tips, challenges, and experiences to enhance your learning journey." }),
+    /* @__PURE__ */ jsx(
+      Box,
+      {
+        component: "img",
+        src: ShareWhatsappImage,
+        alt: "Join the community by whatsapp",
+        sx: {
+          maxWidth: "100%",
+          maxHeight: 400,
+          borderRadius: 4,
+          boxShadow: "0 8px 24px rgba(0,0,0,0.12)"
+        }
+      }
+    ),
+    /* @__PURE__ */ jsx(
+      Typography,
+      {
+        variant: "h4",
+        sx: {
+          mt: 2,
+          fontWeight: "bold",
+          color: "#1a5da6",
+          textDecoration: "underline",
+          cursor: "pointer"
+        },
+        onClick: () => window.open(
+          "https://chat.whatsapp.com/BaudXTobKCoBhykSvacBmN?mode=r_c",
+          "_blank"
+        ),
+        children: "Or Click here to join via a link"
+      }
+    )
+  ] }) });
+}
 lazy(() => import("./Home-Dz3rcVlN.js"));
 const TrainPiano = lazy(() => import("./TrainPiano-C9oKuhbZ.js"));
-const OnboardingPage = lazy(() => import("./OnBoarding-RK1fZQ2Y.js"));
+const OnboardingPage = lazy(() => import("./OnBoarding-BYX9wMB_.js"));
 const AdvicePage = lazy(() => import("./AdvicePage-GELi558g.js"));
 const TutorialPage = lazy(() => import("./TutorialPage-CawM3Usa.js"));
 const theme = createTheme$1({
@@ -2488,7 +2527,7 @@ const Router = ({ isMobile }) => {
         Route,
         {
           path: "community",
-          element: /* @__PURE__ */ jsx(InformationPage, { content: "Connect with fellow piano enthusiasts who share your musical interests and goals." })
+          element: /* @__PURE__ */ jsx(CommunityPage, {})
         }
       ),
       /* @__PURE__ */ jsx(

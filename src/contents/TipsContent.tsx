@@ -3,7 +3,7 @@ import { ThemeProvider } from "@mui/material";
 import { landingPageTheme } from "../utils/LandingPageTheme";
 import { TEXT_CONTENT_LANDING_PAGE } from "../data/landingPageConstants";
 
-export default function TipsPage() {
+export default function TipsContent() {
   const { title, items } = TEXT_CONTENT_LANDING_PAGE.tips;
   return (
     <ThemeProvider theme={landingPageTheme}>

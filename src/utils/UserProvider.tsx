@@ -43,6 +43,8 @@ export interface ExerciseHistoryItem {
 // Type for the current song being learned
 export interface Song {
   title: string;
+  measuresNumber: number;
+  youtubeLink?: string;
   description?: string;
   timeSpent: number; // minutes spent training this song
   totalTime: number; // total minutes required for song training
@@ -60,7 +62,7 @@ interface User {
   currentLevel: number;
   notation: "anglo" | "solfege";
   exerciseHistory: ExerciseHistoryItem[];
-  currentSong?: Song; // current song training info
+  currentSong?: Song | undefined; // current song training info
 }
 
 // Context type – includes functions to update profile, challenge, exercise, and song training data
@@ -72,7 +74,11 @@ interface UserContextType {
   updateCurrentLevel: (level: number) => void;
   toggleNotation: () => void;
   recordExerciseSession: (score: number, rounds: number) => void;
-  updateSongTraining: (minutes: number, newSession?: boolean) => void;
+  updateSongTraining: (
+    minutes: number,
+    newSession?: boolean,
+    props?: any
+  ) => void;
   dailyProgress: number;
   chartData: any;
   chartOptions: any;
@@ -91,14 +97,7 @@ const defaultUser: User = {
   notation: "anglo",
   exerciseHistory: [],
   // Initialize with an example current song (e.g., Solas of Jamie Duffy)
-  currentSong: {
-    title: "Solas of Jamie Duffy",
-    description:
-      "Practice and master the technique of Solas as described by Jamie Duffy.",
-    timeSpent: 0,
-    totalTime: 3, // Default total song duration is 3 minutes
-    trainingSessions: 0,
-  },
+  currentSong: undefined,
 };
 
 // Updated challenge levels: only revision levels are active (levels 1 and 2)
@@ -133,6 +132,9 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
     const saved = localStorage.getItem("user-onaipiano");
     return saved ? JSON.parse(saved) : defaultUser;
   });
+
+  console.log("User state initialized: ", user);
+
   const [challengeLevels, setChallengeLevels] = useState<ChallengeLevel[]>(
     defaultChallengeLevels
   );
@@ -202,18 +204,30 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
   };
 
   // Update song training progress. When newSession is true, the training session counter increases.
-  const updateSongTraining = (minutes: number, newSession: boolean = false) => {
+  const updateSongTraining = (
+    minutes: number,
+    newSession: boolean = false,
+    props: any = {}
+  ) => {
+    console.log("Updating song training: ", minutes, newSession, props);
+    // setUser((prev) => {
+    //   return {
+    //     ...prev,
+    //     currentSong: prev.currentSong
+    //       ? {
+    //           ...prev.currentSong || {},
+    //           timeSpent: prev.currentSong.timeSpent || 0 + minutes,
+    //           trainingSessions: newSession
+    //             ? (prev.currentSong.trainingSessions || 0) + 1
+    //             : (prev.currentSong.trainingSessions || 0),
+    //           ...(props || {}),
+    //         }
+    //       : prev.currentSong,
+    //   };
+    // });
     setUser((prev) => ({
       ...prev,
-      currentSong: prev.currentSong
-        ? {
-            ...prev.currentSong,
-            timeSpent: prev.currentSong.timeSpent + minutes,
-            trainingSessions: newSession
-              ? prev.currentSong.trainingSessions + 1
-              : prev.currentSong.trainingSessions,
-          }
-        : prev.currentSong,
+      currentSong: { ...prev.currentSong, ...props } as Song,
     }));
   };
 

@@ -3,7 +3,7 @@ import { ThemeProvider } from "@mui/material";
 import { TEXT_CONTENT_LANDING_PAGE } from "../data/landingPageConstants";
 import { landingPageTheme } from "../utils/LandingPageTheme";
 
-export default function FeaturedPage() {
+export default function FeaturedContent() {
   const { title, stories } = TEXT_CONTENT_LANDING_PAGE.featured;
   return (
     <ThemeProvider theme={landingPageTheme}>

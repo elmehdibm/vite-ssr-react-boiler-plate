@@ -7,10 +7,11 @@ import { UserProvider } from "../utils/UserProvider";
 import InformationPage from "../contents/InformationPage";
 import SongLearningPage from "../views/SongLearningPage";
 import LandingPage from "../views/LandingPage";
-import FeaturedPage from "../views/FeaturedPage";
-import TipsPage from "../views/TipsPage";
+import FeaturedPage from "../contents/FeaturedContent";
+import TipsPage from "../contents/TipsContent";
 import MainViewSpace from "../contents/MainViewSpace";
 import DiscoverChallenges from "../views/DiscoverChallenges";
+import CommunityPage from "../views/CommunityPage";
 
 const Home = lazy(() => import("../views/archive/Home"));
 const TrainPiano = lazy(() => import("../views/TrainPiano"));
@@ -46,7 +47,7 @@ export const Router = ({ isMobile }: any) => {
               <Route
                 path="community"
                 element={
-                  <InformationPage content="Connect with fellow piano enthusiasts who share your musical interests and goals." />
+                  <CommunityPage />
                 }
               />
               <Route
