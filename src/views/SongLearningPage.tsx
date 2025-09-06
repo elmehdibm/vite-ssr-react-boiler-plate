@@ -1,54 +1,34 @@
-import { useState, useEffect, useRef, useMemo } from "react";
+import { useState, useEffect } from "react";
 import {
   Box,
   Card,
   CardContent,
   Typography,
   Button,
-  Grid,
-  Checkbox,
-  FormControlLabel,
   LinearProgress,
-  Link,
+  Alert,
 } from "@mui/material";
 import { useUser } from "../utils/UserProvider";
 import { useNavigate } from "react-router-dom";
-import HeroContent from "../contents/HeroContent";
-import PractiseSessionOnaiContent from "../contents/PractiseSessionOnaiContent";
-import PractiseSessionSongFormContent from "../contents/PractiseSessionSongFormContent";
 
-/**
- * User has this informations :
- *
- * user.currentSong :
- * description (string)
- * timeSpent (number)
- * title (string)
- * totalTime (number)
- * trainingSessions (number)
- * measuresNumber (number)
- *
- *
- * Scenario of learning :
- *
- * The pianist is new and he will start a new training
- *
- * Onai will ask him to fill some infos by loading a form and getting the data
- *
- * The first message will be
- * Welcome to the practice session, I'll guide you step by step until you master your song, before, I'll need you to give me some infos about your song .. and a button "Ready ?"
- *
- *
- * Then the form appears
- *
- *
- *
- *
- *
- *
- */
+// Import the enhanced learning system
+import {
+  EnhancedLearningSystemController,
+  LearningSystemState,
+  MeasureProgress,
+  PerformanceAttempt,
+} from "../data/practicePiano";
 
-// Utility to format seconds into MM:SS
+// Import the unified content renderer
+import UnifiedContentRenderer from "../contents/UnifiedContentRenderer";
+
+// Import the new ProgressView component
+import ProgressView from "../contents/ProgressView";
+
+// ==========================================
+// UPDATED MAIN COMPONENT
+// ==========================================
+
 const formatTime = (seconds: number): string => {
   const m = Math.floor(seconds / 60)
     .toString()
@@ -57,283 +37,363 @@ const formatTime = (seconds: number): string => {
   return `${m}:${s}`;
 };
 
-// Helper: Compute dynamic advice text based on measures learned.
-const getAdvice = (learnedCount: number, totalMeasures: number): string => {
-  if (learnedCount === 0) return "Start by learning two measures.";
-  if (learnedCount > 0 && learnedCount < 2)
-    return "Good start! Validate one more measure to complete your first set.";
-  if (learnedCount === 2)
-    return "Congrats! You've mastered your first two measures. Now, try validating two more.";
-  if (learnedCount > 2 && learnedCount < totalMeasures)
-    return "Great progress! Keep building your song piece by piece.";
-  if (learnedCount === totalMeasures)
-    return "Congratulations! You've validated all measures and mastered the song!";
-  return "";
-};
-
 const SongLearningPage: React.FC = () => {
-  // Access data and functions from the context.
   const { user, updateSongTraining } = useUser();
   const navigate = useNavigate();
 
-  const currentSong = user.currentSong;
+  // Enhanced learning system state
+  const [learningSystem, setLearningSystem] =
+    useState<EnhancedLearningSystemController | null>(null);
+  const [systemState, setSystemState] = useState<LearningSystemState | null>(
+    null
+  );
 
-  console.log("user is ", user);
-
+  // Error handling
   const [errorMsg, setErrorMsg] = useState("");
 
-  // Logic of the form
-  const [isFormDisplayed, setDisplayForm] = useState(false);
-  const [formFilled, setFormFilled] = useState(false);
+  // Session completion state
+  const [sessionCompleted, setSessionCompleted] = useState(false);
 
-  // Set up song-related constants.
-  // Assume 4 measures per minute. Adjust as needed.
+  // Initialize enhanced learning system
+  useEffect(() => {
+    if (!learningSystem) {
+      const system = new EnhancedLearningSystemController((newState) => {
+        setSystemState({ ...newState });
 
-  const totalMinutes = currentSong?.totalTime || 3;
+        // If song data was added through form, update user context
+        if (newState.context.songData && !user.currentSong) {
+          updateSongTraining(0, false, newState.context.songData);
+        }
+      });
 
-  const totalMeasures = totalMinutes * 4;
-
-  console.log("totalMeasures are ", totalMeasures);
-
-  // --- Card 2 State: Session Timer ---
-  const [sessionTime, setSessionTime] = useState<number>(
-    user.currentSong?.timeSpent || 0
-  );
-  const [isTiming, setIsTiming] = useState<boolean>(false);
-  const sessionTimerRef = useRef<NodeJS.Timeout | null>(null);
-
-  // --- Card 3 State: Measures & Advice ---
-  // Track if each measure has been validated.
-  const [measures, setMeasures] = useState<boolean[]>(
-    Array(totalMeasures).fill(false)
-  );
-  // Dynamic advice text that reacts to measure validation.
-  const [adviceText, setAdviceText] = useState<string>(
-    getAdvice(0, totalMeasures)
-  );
-
-  // --- Session Timer Functions ---
-  const startSession = () => {
-    if (!isTiming) {
-      setIsTiming(true);
-      sessionTimerRef.current = setInterval(() => {
-        setSessionTime((prev) => prev + 1);
-      }, 1000);
+      setLearningSystem(system);
+      setSystemState(system.getState());
     }
+  }, [learningSystem, user.currentSong, updateSongTraining]);
+
+  // Get current step and actions from learning system
+  const currentStep = learningSystem?.getCurrentStep();
+  const availableActions = learningSystem?.getAvailableActions() || [];
+  const progress = learningSystem?.getProgress() || {
+    current: 0,
+    total: 1,
+    percentage: 0,
   };
 
-  const pauseSession = () => {
-    setIsTiming(false);
-    if (sessionTimerRef.current) {
-      clearInterval(sessionTimerRef.current);
-      sessionTimerRef.current = null;
-    }
-  };
-
+  // Session control functions
   const endSession = () => {
-    pauseSession();
-    // Convert seconds to minutes (rounded) for recording.
-    const minutesSpent = Math.round(sessionTime / 60);
-    console.log("Session ended. Time spent:", minutesSpent, "minutes");
-    if (minutesSpent > 0) {
-      updateSongTraining(minutesSpent, true);
+    if (learningSystem && systemState) {
+      const minutesSpent = Math.round(
+        systemState.context.sessionData.timeSpent / 60
+      );
+      console.log("Session ended. Time spent:", minutesSpent, "minutes");
+      if (minutesSpent > 0) {
+        updateSongTraining(minutesSpent, true);
+      }
     }
     navigate("/home");
   };
 
-  // --- Measures / Learning Flow ---
-  // Update advice text when a measure is toggled.
-  const toggleMeasure = (index: number) => {
-    setMeasures((prev) => {
-      const newMeasures = prev.map((learned, i) =>
-        i === index ? !learned : learned
-      );
-      const learnedCount = newMeasures.filter(Boolean).length;
-      // If the user just validated a measure, add a congratulatory note.
-      const newAdvice = newMeasures[index]
-        ? `Congrats! Measure ${index + 1} validated. ${getAdvice(
-            learnedCount,
-            totalMeasures
-          )}`
-        : getAdvice(learnedCount, totalMeasures);
-      setAdviceText(newAdvice);
-      return newMeasures;
-    });
+  // Handle error dismissal
+  const handleErrorDismiss = () => {
+    setErrorMsg("");
   };
 
-  const measuresLearned = measures.filter(Boolean).length;
-  const progressPercent = (measuresLearned / totalMeasures) * 100;
+  // ProgressView handlers
+  const handleProgressUpdate = (data: {
+    measuresProgress: MeasureProgress[];
+    timeSpent: number;
+  }) => {
+    if (learningSystem && systemState) {
+      // Update the learning system with progress data
+      learningSystem.handleAction("progress_update", data);
+    }
+  };
 
-  return (
-    // Outer scrollable container: full viewport height with vertical scrolling
-    <Box
-      sx={{
-        height: "100vh",
-        overflowY: "auto",
-        p: 2,
-      }}
-    >
+  const handlePerformanceAttempt = (
+    attempt: Omit<PerformanceAttempt, "id" | "timestamp">
+  ) => {
+    console.log("Performance attempt recorded:", attempt);
+    if (learningSystem) {
+      learningSystem.handleAction("performance_attempt", attempt);
+    }
+  };
+
+  const handleSessionComplete = () => {
+    setSessionCompleted(true);
+    if (learningSystem) {
+      learningSystem.handleAction("session_complete", true);
+    }
+  };
+
+  // Show loading state if system is not ready
+  if (!learningSystem || !systemState || !currentStep) {
+    return (
       <Box
         sx={{
-          maxWidth: 900,
+          height: "100vh",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+        }}
+      >
+        <Typography variant="h6">
+          Initializing your practice session...
+        </Typography>
+      </Box>
+    );
+  }
+
+  const isSetupPhase = systemState.currentScenario === "universal_start";
+  const hasActiveSong = systemState.context.songData || user.currentSong;
+
+  return (
+    <Box sx={{ height: "100vh", overflowY: "auto", p: 2 }}>
+      <Box
+        sx={{
+          maxWidth: 1400, // Increased width to accommodate progress view
           mx: "auto",
           display: "flex",
           flexDirection: "column",
-          gap: 4,
+          gap: 3,
         }}
       >
-        <Typography align="center" variant="h4">
-          {"Practice Session with Onai"}
-        </Typography>
-        {/* Header */}
-        <HeroContent>
-          <PractiseSessionOnaiContent
-            currentSong={user.currentSong}
-            isFormDisplayed={isFormDisplayed}
-            setDisplayForm={setDisplayForm}
-            errorMsg={errorMsg}
-            setErrorMsg={setErrorMsg}
-            formFilled={formFilled}
-          />
-        </HeroContent>
-        {!user.currentSong && isFormDisplayed && (
-          <PractiseSessionSongFormContent
-            onSubmit={(data) => {
-              console.log("data are ", data);
-              setDisplayForm(false);
-              setFormFilled(true);
-              updateSongTraining(0, false, {
-                title: data.songName,
-                measuresNumber: data.measuresNumber,
-              });
-            }}
-          />
-        )}
-        {user.currentSong && (
-          <>
-            {/* Card 1: Song Overview */}
-            <Card
-              sx={{
-                display: "flex",
-                justifyContent: "space-between",
-                p: 2,
-                alignItems: "center",
-                flexWrap: "wrap",
-              }}
-            >
-              <CardContent>
-                <Typography
-                  color="primary"
-                  fontWeight="bold"
-                  variant="h5"
-                  gutterBottom
-                >
-                  {currentSong ? currentSong.title : "No Song Selected"}
-                </Typography>
-                <Typography variant="h4" sx={{ my: 1 }}>
-                  {formatTime(sessionTime)}
-                </Typography>
-                <Box sx={{ display: "flex", gap: 1, mb: 2 }}>
-                  <Button
-                    variant="contained"
-                    color="primary"
-                    onClick={startSession}
-                    disabled={isTiming}
-                  >
-                    Start
-                  </Button>
-                  <Button
-                    variant="outlined"
-                    color="primary"
-                    onClick={pauseSession}
-                    disabled={!isTiming}
-                  >
-                    Pause
-                  </Button>
-                  <Button variant="text" color="secondary" onClick={endSession}>
-                    End Session
-                  </Button>
-                </Box>
-                <Box>
-                  <Link
-                    href="https://www.youtube.com/watch?v=dQw4w9WgXcQ"
-                    target="_blank"
-                    underline="hover"
-                    color="primary"
-                  >
-                    Listen to the song on YouTube
-                  </Link>
-                </Box>
-              </CardContent>
-              <CardContent sx={{ flex: 1 }}>
-                <Typography variant="body1">
-                  Progress: {measuresLearned} / {totalMeasures} measures learned
+        {/* Page Title */}
+        {systemState.context.songData?.title ||
+        (user.currentSong?.title && !isSetupPhase && hasActiveSong) ? (
+          <Box display="flex" justifyContent={"space-between"} mb={2}>
+            <Box sx={{ flex: 1 }}>
+              <Typography align="left" variant="h4" gutterBottom>
+                {systemState.context.songData?.title || user.currentSong?.title}
+              </Typography>
+              <Box>
+                <Typography variant="body1" gutterBottom>
+                  Learning Progress
                 </Typography>
                 <LinearProgress
                   variant="determinate"
-                  value={progressPercent}
-                  sx={{ height: 10, borderRadius: 5, my: 1 }}
+                  value={progress.percentage}
+                  sx={{ height: 8, borderRadius: 4, mb: 1 }}
                 />
                 <Typography variant="body2" color="textSecondary">
-                  Time spent on training:{" "}
-                  {currentSong ? currentSong.timeSpent : 0} min
+                  Step {progress.current + 1} of {progress.total}
                 </Typography>
-              </CardContent>
-            </Card>
+              </Box>
+            </Box>
 
-            {/* Card 3: Learning Flow & Measures */}
-            <Card sx={{ p: 2 }}>
-              <CardContent>
-                <Typography variant="h6" gutterBottom>
-                  Learning Flow
+            <Box sx={{ textAlign: "right" }}>
+              <Box>
+                <Typography variant="h4" align="center">
+                  {formatTime(systemState.context.sessionData.timeSpent)}
                 </Typography>
-                {/* Disabled Upload Button with note */}
-                <Box sx={{ mb: 2 }}>
-                  <Button variant="contained" disabled>
-                    Upload Sheet / Music
-                  </Button>
-                  <Typography
-                    variant="caption"
-                    color="textSecondary"
-                    display="block"
-                  >
-                    This feature will be available later.
-                  </Typography>
-                </Box>
-
-                {/* Measures List */}
-                <Grid container spacing={1}>
-                  {measures.map((learned, index) => (
-                    <Grid item xs={3} sm={1} key={index}>
-                      <FormControlLabel
-                        control={
-                          <Checkbox
-                            checked={learned}
-                            onChange={() => toggleMeasure(index)}
-                            color="primary"
-                          />
-                        }
-                        label={`M${index + 1}`}
-                        labelPlacement="top"
-                      />
-                    </Grid>
-                  ))}
-                </Grid>
-
-                {/* Dynamic Learning Advice */}
-                <Box
-                  sx={{
-                    mt: 2,
-                    p: 1,
-                    border: "1px dashed #ccc",
-                    borderRadius: 2,
-                  }}
+                <Typography
+                  variant="body2"
+                  align="center"
+                  color="textSecondary"
                 >
-                  <Typography variant="body1">{adviceText}</Typography>
-                </Box>
-              </CardContent>
-            </Card>
-          </>
+                  Session time
+                </Typography>
+              </Box>
+              <Box
+                sx={{
+                  mt: 2,
+                  display: "flex",
+                  gap: 2,
+                  justifyContent: "center",
+                }}
+              >
+                <Button
+                  variant="outlined"
+                  color="secondary"
+                  onClick={endSession}
+                >
+                  End Session
+                </Button>
+              </Box>
+            </Box>
+          </Box>
+        ) : (
+          <Typography align="center" variant="h4" gutterBottom>
+            Practice Session with Onai
+          </Typography>
+        )}
+
+        {/* Main Content Area - Two Column Layout (only when song is active) */}
+        {!isSetupPhase && hasActiveSong ? (
+          <Box sx={{ display: "flex", gap: 4, flexDirection: { xs: "column", md: "row" } }}>
+            {/* Left Column - Learning Content */}
+            <Box sx={{ flex: 1, minWidth: 0 }}>
+              {systemState.isActive && !sessionCompleted ? (
+                <UnifiedContentRenderer
+                  step={currentStep}
+                  context={systemState.context}
+                  actions={availableActions}
+                  onAction={learningSystem.handleAction}
+                  onStepComplete={learningSystem.completeStep}
+                  onStepSkip={learningSystem.skipStep}
+                  errorMsg={errorMsg}
+                  onErrorDismiss={handleErrorDismiss}
+                />
+              ) : (
+                /* Session Complete */
+                <Card sx={{ p: 2 }}>
+                  <CardContent sx={{ textAlign: "center" }}>
+                    <Typography variant="h5" color="primary" gutterBottom>
+                      Congratulations!
+                    </Typography>
+                    <Typography variant="body1" sx={{ mb: 3 }}>
+                      You've completed your practice session! Great work on "
+                      {systemState.context.songData?.title ||
+                        user.currentSong?.title}
+                      ".
+                    </Typography>
+
+                    <Typography
+                      variant="body2"
+                      color="textSecondary"
+                      sx={{ mb: 2 }}
+                    >
+                      Session Summary:
+                    </Typography>
+
+                    <Box
+                      sx={{
+                        mb: 3,
+                        display: "flex",
+                        flexDirection: "column",
+                        gap: 1,
+                      }}
+                    >
+                      <Typography variant="body2">
+                        Time Practiced:{" "}
+                        {formatTime(systemState.context.sessionData.timeSpent)}
+                      </Typography>
+                      <Typography variant="body2">
+                        Steps Completed: {systemState.completedSteps.length}
+                      </Typography>
+                      <Typography variant="body2">
+                        Measures Progress:{" "}
+                        {
+                          systemState.context.sessionData.measuresCompleted.filter(
+                            Boolean
+                          ).length
+                        }{" "}
+                        /{" "}
+                        {
+                          systemState.context.sessionData.measuresCompleted
+                            .length
+                        }
+                      </Typography>
+                      <Typography variant="body2">
+                        Performance Attempts:{" "}
+                        {
+                          systemState.context.sessionData.progressData
+                            .performanceAttempts.length
+                        }
+                      </Typography>
+                    </Box>
+
+                    <Button
+                      variant="contained"
+                      color="primary"
+                      onClick={endSession}
+                      size="large"
+                    >
+                      Finish & Save Progress
+                    </Button>
+                  </CardContent>
+                </Card>
+              )}
+            </Box>
+
+            {/* Right Column - Progress View (Always visible when song is active) */}
+            <Box sx={{ flex: 1, minWidth: 400 }}>
+              <ProgressView
+                songTitle={
+                  systemState.context.songData?.title ||
+                  user.currentSong?.title ||
+                  "Unknown Song"
+                }
+                totalMeasures={
+                  systemState.context.songData?.measuresNumber || 12
+                }
+                targetTempo={systemState.context.songData?.targetTempo || 120}
+                sessionTimeSpent={systemState.context.sessionData.timeSpent}
+                initialMeasuresProgress={
+                  systemState.context.sessionData.progressData.measuresProgress
+                }
+                initialPerformanceAttempts={
+                  systemState.context.sessionData.progressData
+                    .performanceAttempts
+                }
+                onProgressUpdate={handleProgressUpdate}
+                onPerformanceAttempt={handlePerformanceAttempt}
+                onSessionComplete={handleSessionComplete}
+              />
+            </Box>
+          </Box>
+        ) : (
+          /* Setup Phase - Single Column */
+          <Box sx={{ maxWidth: 800, mx: "auto" }}>
+            {systemState.isActive ? (
+              <UnifiedContentRenderer
+                step={currentStep}
+                context={systemState.context}
+                actions={availableActions}
+                onAction={learningSystem.handleAction}
+                onStepComplete={learningSystem.completeStep}
+                onStepSkip={learningSystem.skipStep}
+                errorMsg={errorMsg}
+                onErrorDismiss={handleErrorDismiss}
+              />
+            ) : (
+              <Card sx={{ p: 2 }}>
+                <CardContent sx={{ textAlign: "center" }}>
+                  <Typography variant="h5" color="primary" gutterBottom>
+                    Setup Complete!
+                  </Typography>
+                  <Typography variant="body1" sx={{ mb: 3 }}>
+                    Your practice session is ready to begin.
+                  </Typography>
+                  <Button
+                    variant="contained"
+                    color="primary"
+                    onClick={endSession}
+                    size="large"
+                  >
+                    Continue to Practice
+                  </Button>
+                </CardContent>
+              </Card>
+            )}
+          </Box>
+        )}
+
+        {/* Debug Info (remove in production) */}
+        {process.env.NODE_ENV === "development" && (
+          <Card sx={{ p: 2, bgcolor: "grey.100" }}>
+            <CardContent>
+              <Typography variant="caption" gutterBottom>
+                Debug Info:
+              </Typography>
+              <pre style={{ fontSize: "12px", overflow: "auto" }}>
+                {JSON.stringify(
+                  {
+                    currentStep: currentStep?.id,
+                    scenario: systemState.currentScenario,
+                    completedSteps: systemState.completedSteps,
+                    availableActions: availableActions.map((a) => a.id),
+                    hasActiveSong: hasActiveSong,
+                    isSetupPhase: isSetupPhase,
+                    sessionCompleted: sessionCompleted,
+                    progressData: systemState.context.sessionData.progressData,
+                  },
+                  null,
+                  2
+                )}
+              </pre>
+            </CardContent>
+          </Card>
         )}
       </Box>
     </Box>
